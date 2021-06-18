@@ -30,9 +30,9 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "blackbean",
 	Short: "Basic interact with es via command line",
-	Long: `'blackbean' command provides a set of commands to talk with es via cli.`,
+	Long: `blackbean command provides a set of commands to talk with es via cli.
+Besides, blackbean is the name of my favorite french bulldog.`,
 }
-
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -72,7 +72,7 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error loading config file: %v\n\n", err)
 	}
 }

@@ -15,8 +15,22 @@ limitations under the License.
 */
 package main
 
-import "github.com/toughnoah/blackbean/cmd"
+import (
+	"crypto/tls"
+
+	"github.com/spf13/cobra"
+
+	"github.com/toughnoah/blackbean/cmd"
+	"net/http"
+)
 
 func main() {
-	cmd.Execute()
+	cmd.InitConfig()
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	rootCmd := cmd.NewRootCmd(tr)
+	cobra.CheckErr(rootCmd.Execute())
 }

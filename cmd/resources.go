@@ -6,14 +6,11 @@ import (
 	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"github.com/spf13/cobra"
 	"github.com/toughnoah/blackbean/pkg/es"
-	"log"
-	"os"
 )
 
 var resources = []string{"health", "nodes", "allocations", "threadpool", "cachemem", "segmem", "largeindices"}
 
-func catClusterResources() *cobra.Command {
-	var Cluster string
+func catClusterResources(cli *elasticsearch.Client) *cobra.Command {
 	var command = &cobra.Command{
 		Use:   "get [resource]",
 		Short: "get allocation/nodes/health/nodes/threadpool/cache memory/segments memory/large indices.",
@@ -25,36 +22,17 @@ func catClusterResources() *cobra.Command {
 			}
 			return resources, cobra.ShellCompDirectiveNoFileComp
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			cli, err := es.NewEsClient(Cluster)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: %v\n\n", err)
-				os.Exit(-1)
-			}
+		RunE: func(cmd *cobra.Command, args []string) error {
 			co := &CatObject{
 				Client:   cli,
 				Resource: args[0],
 			}
-			if err = co.catResources(); err != nil {
-				fmt.Fprintf(os.Stderr, "error: %v\n\n", err)
-				os.Exit(-1)
+			if err := co.catResources(); err != nil {
+				return err
 			}
+			return nil
 		},
 	}
-	f := command.Flags()
-	f.StringVarP(&Cluster, "cluster", "c", "default", "to specify a es cluster")
-
-	err := command.RegisterFlagCompletionFunc("cluster", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		if len(args) == 1 {
-			return es.GetConfigEnv(toComplete), cobra.ShellCompDirectiveNoFileComp
-		}
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	_ = rootCmd.MarkFlagRequired("cluster")
 	return command
 }
 
@@ -81,6 +59,9 @@ func (o *CatObject) catResources() (err error) {
 		res, err = o.catSegmentsMemory()
 	case "largeindices":
 		res, err = o.catLargeIndices()
+	default:
+		err = es.NoResourcesError(o.Resource)
+		return
 	}
 	fmt.Println(res)
 	return
@@ -120,8 +101,4 @@ func (o *CatObject) catLargeIndices() (res *esapi.Response, err error) {
 		o.Client.Cat.Indices.WithH("store.size", "index"),
 		o.Client.Cat.Indices.WithBytes("gb"),
 	)
-}
-
-func init() {
-	rootCmd.AddCommand(catClusterResources())
 }

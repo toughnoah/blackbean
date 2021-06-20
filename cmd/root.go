@@ -1,61 +1,70 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+// Package cmd /*
 package cmd
 
 import (
 	"fmt"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-	"os"
-
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
+	"github.com/toughnoah/blackbean/pkg/es"
+	"log"
+	"net/http"
+	"os"
 )
 
-var cfgFile string
+var (
+	cfgFile string
+	Cluster string
+)
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "blackbean",
-	Short: "Basic interact with es via command line",
-	Long: `blackbean command provides a set of commands to talk with es via cli.
+func NewRootCmd(transport http.RoundTripper) *cobra.Command {
+	var rootCmd = &cobra.Command{
+		Use:   "blackbean",
+		Short: "Basic interact with es via command line",
+		Long: `blackbean command provides a set of commands to talk with es via cli.
 Besides, blackbean is the name of my favorite french bulldog.`,
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	cobra.CheckErr(rootCmd.Execute())
-}
-
-func init() {
-	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			if len(args) != 0 {
+				return nil, cobra.ShellCompDirectiveNoFileComp
+			}
+			return editableResources, cobra.ShellCompDirectiveNoFileComp
+		},
+	}
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.blackbean.yaml)")
+
+	rootCmd.PersistentFlags().StringVarP(&Cluster, "cluster", "c", "default", "to specify a es cluster")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	err := rootCmd.RegisterFlagCompletionFunc("cluster", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return es.CompleteConfigEnv(toComplete), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n\n", err)
+		os.Exit(-1)
+	}
+	url, username, password, err := es.GetEnv(Cluster)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n\n", err)
+		os.Exit(-1)
+	}
+
+	cli, err := es.NewEsClient(url, username, password, transport)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n\n", err)
+		os.Exit(-1)
+	}
+	rootCmd.AddCommand(catClusterResources(cli))
+	rootCmd.AddCommand(applyClusterSettings(cli))
+	rootCmd.AddCommand(completionCmd)
+	return rootCmd
 }
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
+func InitConfig() {
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
@@ -73,6 +82,6 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error loading config file: %v\n\n", err)
+		log.Fatal("ERROR: ", "can't not read config file! ", err)
 	}
 }

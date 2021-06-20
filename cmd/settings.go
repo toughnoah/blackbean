@@ -53,7 +53,6 @@ type allocation struct {
 	NodeInitialPrimariesRecoveries string `json:"node_initial_primaries_recoveries,omitempty"`
 	Disk                           *disk  `json:"disk,omitempty"`
 	Enable                         string `json:"enable,omitempty"`
-	MaxShardsPerNode               int    `json:"max_shards_per_node,omitempty"`
 }
 
 type disk struct {
@@ -186,25 +185,12 @@ func (S *Settings) WithWatermark(High, Low string) *Settings {
 	if High == "" && Low == "" {
 		return S
 	}
-	if S.Persistent.Cluster != nil {
-		if S.Persistent.Cluster.Routing != nil {
-			S.Persistent.Cluster.Routing.Allocation.Disk = &disk{
-				Watermark: &watermark{
-					Low:  Low,
-					High: High,
-				},
-			}
-		} else {
-			S.Persistent.Cluster.Routing = &routing{
-				Allocation: &allocation{
-					Disk: &disk{
-						Watermark: &watermark{
-							Low:  Low,
-							High: High,
-						},
-					},
-				},
-			}
+	if S.Persistent.Cluster != nil && S.Persistent.Cluster.Routing != nil {
+		S.Persistent.Cluster.Routing.Allocation.Disk = &disk{
+			Watermark: &watermark{
+				Low:  Low,
+				High: High,
+			},
 		}
 	} else {
 		S.Persistent.Cluster = &cluster{
@@ -220,7 +206,6 @@ func (S *Settings) WithWatermark(High, Low string) *Settings {
 			},
 		}
 	}
-
 	return S
 }
 
@@ -228,7 +213,7 @@ func (S *Settings) WithRecovery(MaxBytesPerSec string) *Settings {
 	if MaxBytesPerSec == "" {
 		return S
 	}
-	if S.Persistent.Cluster != nil {
+	if S.Persistent.Indices != nil {
 		S.Persistent.Indices.Recovery = &recovery{
 			MaxBytesPerSec: MaxBytesPerSec,
 		}
@@ -272,9 +257,8 @@ func NewSettings() *Settings {
 	return &Settings{Persistent: &persistent{}}
 }
 
-func applyClusterSettings() *cobra.Command {
+func applyClusterSettings(cli *elasticsearch.Client) *cobra.Command {
 	var (
-		Cluster                        string
 		clusterConcurrentRebalanced    string
 		nodeConcurrentRecoveries       string
 		nodeInitialPrimariesRecoveries string
@@ -299,11 +283,9 @@ func applyClusterSettings() *cobra.Command {
 			}
 			return editableResources, cobra.ShellCompDirectiveNoFileComp
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			cli, err := es.NewEsClient(Cluster)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: %v\n\n", err)
-				os.Exit(-1)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if args[0] != "settings" {
+				return es.NoResourcesError(args[0])
 			}
 			po := PutObject{Client: cli}
 			settings := NewSettings()
@@ -322,14 +304,13 @@ func applyClusterSettings() *cobra.Command {
 
 			res, err := po.putSettings(settings)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: %v\n\n", err)
-				os.Exit(-1)
+				return err
 			}
 			fmt.Println(res)
+			return nil
 		},
 	}
 	f := command.Flags()
-	f.StringVarP(&Cluster, "cluster", "c", "default", "to specify a es cluster")
 	f.StringVarP(&clusterConcurrentRebalanced, "cluster_concurrent_rebalanced", "a", "", "to set cluster_concurrent_rebalanced value, such as 10")
 	f.StringVarP(&nodeConcurrentRecoveries, "node_concurrent_recoveries", "n", "", "to set node_concurrent_recoveries value, such as 10")
 	f.StringVarP(&nodeInitialPrimariesRecoveries, "node_initial_primaries_recoveries", "i", "", "to set node_initial_primaries_recoveries value, such as 10")
@@ -343,19 +324,7 @@ func applyClusterSettings() *cobra.Command {
 	f.StringVarP(&allocationEnable, "allocation_enable", "e", "", "to set allocation enable value, primaries or null")
 	f.StringVarP(&maxBytesPerSec, "max_bytes_per_sec", "b", "", "to set indices recovery max_bytes_per_sec, default 40 ")
 
-	err := command.RegisterFlagCompletionFunc("cluster", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		if len(args) == 1 {
-			return es.GetConfigEnv(toComplete), cobra.ShellCompDirectiveNoFileComp
-		}
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	})
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n\n", err)
-		os.Exit(-1)
-	}
-
-	err = command.RegisterFlagCompletionFunc("allocation_enable", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	err := command.RegisterFlagCompletionFunc("allocation_enable", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		if len(args) == 1 {
 			return []string{"primaries", "null"}, cobra.ShellCompDirectiveNoFileComp
 		}
@@ -366,25 +335,11 @@ func applyClusterSettings() *cobra.Command {
 		fmt.Fprintf(os.Stderr, "%v\n\n", err)
 		os.Exit(-1)
 	}
-
-	_ = rootCmd.MarkFlagRequired("cluster")
-	_ = rootCmd.MarkFlagRequired("cluster_concurrent_rebalance")
-	_ = rootCmd.MarkFlagRequired("node_concurrent_recoveries")
-	_ = rootCmd.MarkFlagRequired("node_initial_primaries_recoveries")
-	_ = rootCmd.MarkFlagRequired("breaker_fielddata")
-	_ = rootCmd.MarkFlagRequired("breaker_total")
-	_ = rootCmd.MarkFlagRequired("watermark_high")
-	_ = rootCmd.MarkFlagRequired("watermark_low")
-	_ = rootCmd.MarkFlagRequired("max_compilations_rate")
-	_ = rootCmd.MarkFlagRequired("max_shards_per_node")
-	_ = rootCmd.MarkFlagRequired("allocation_enable")
-	_ = rootCmd.MarkFlagRequired("max_bytes_per_sec")
 	return command
 }
 
 type PutObject struct {
-	Client   *elasticsearch.Client
-	Resource string
+	Client *elasticsearch.Client
 }
 
 func (o *PutObject) putSettings(settings *Settings) (*esapi.Response, error) {
@@ -398,8 +353,4 @@ func (o *PutObject) putSettings(settings *Settings) (*esapi.Response, error) {
 		return nil, err
 	}
 	return putSettings, err
-}
-
-func init() {
-	rootCmd.AddCommand(applyClusterSettings())
 }

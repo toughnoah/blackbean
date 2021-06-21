@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"strings"
 )
 
 var _ = Describe("cat resources test", func() {
@@ -34,9 +34,9 @@ var _ = Describe("cat resources test", func() {
 			}
 		})
 		It("test noCompletions", func() {
-			res, err := executeCommandForTesting("__complete get ''", nil)
+			out, err := executeCommandForTesting("__complete get ''", nil)
 			Expect(err).To(BeNil())
-			fmt.Println(res)
+			Expect(strings.Contains(out, "health\nnodes\nallocations\nthreadpool\ncachemem\nsegmem\nlargeindices"))
 		})
 	})
 })

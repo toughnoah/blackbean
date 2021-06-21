@@ -53,6 +53,6 @@ func executeCommandForTesting(cmdToExecute string, MockTransport http.RoundTripp
 	if err = root.Execute(); err != nil {
 		return "", err
 	}
-	res := buf.String()
-	return res, nil
+	out := buf.String()
+	return out, nil
 }

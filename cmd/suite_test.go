@@ -36,22 +36,23 @@ var _ = AfterSuite(func() {
 
 })
 
-func executeCommandForTesting(cmdToExecute string, MockTransport http.RoundTripper) error {
+func executeCommandForTesting(cmdToExecute string, MockTransport http.RoundTripper) (string, error) {
 	defer monkey.Unpatch(es.GetEnv)
 	args, err := shellwords.Parse(cmdToExecute)
 	if err != nil {
-		return err
+		return "", err
 	}
 	buf := new(bytes.Buffer)
 	monkey.Patch(es.GetEnv, func(env string) (url, username, password string, err error) {
 		return TestUrl, TestUsername, TestPassword, nil
 	})
 	root := NewRootCmd(MockTransport)
-	root.SetOut(buf)
 	root.SetErr(buf)
+	root.SetOut(buf)
 	root.SetArgs(args)
 	if err = root.Execute(); err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	out := buf.String()
+	return out, nil
 }

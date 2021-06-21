@@ -432,7 +432,7 @@ var _ = Describe("put settings test", func() {
 			mockTr := &fake.MockEsResponse{
 				ResponseString: `{"test":"apply"}`,
 			}
-			err := executeCommandForTesting("apply settings -i 2", mockTr)
+			_, err := executeCommandForTesting("apply settings -i 2", mockTr)
 			Expect(err).To(BeNil())
 		})
 	})

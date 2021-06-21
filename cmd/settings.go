@@ -11,9 +11,7 @@ import (
 	"os"
 )
 
-var editableResources = []string{
-	"settings",
-}
+var editableResources = []string{"settings"}
 
 type Settings struct {
 	Persistent *persistent `json:"persistent"`

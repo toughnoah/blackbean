@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/mitchellh/go-homedir"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/prashantv/gostub"
@@ -11,17 +12,35 @@ import (
 var _ = Describe("cat resources test", func() {
 	Context("test no filecompletion", func() {
 		It("test noCompletions", func() {
-			fs := afero.NewOsFs()
-			filename := ".blackbean.yaml"
-			path := "/tmp"
-			file := filepath.Join(path, filename)
-			_, createErr := fs.Create(file)
-			gostub.Stub(&cfgFile, "/tmp/.blackbean.yaml")
-			Expect(createErr).To(BeNil())
-			defer func() {
-				_ = fs.Remove(file)
-			}()
-			InitConfig()
+			home, err := homedir.Dir()
+			stubs := gostub.New()
+			Expect(err).To(BeNil())
+			testCase := []struct {
+				path       string
+				stubsOrNot bool
+			}{
+				{
+					path: home,
+				},
+				{
+					path:       "/tmp",
+					stubsOrNot: true,
+				},
+			}
+			for _, tc := range testCase {
+				fs := afero.NewOsFs()
+				filename := ".blackbean.yaml"
+				file := filepath.Join(tc.path, filename)
+				_, createErr := fs.Create(file)
+				if tc.stubsOrNot {
+					stubs.Stub(&cfgFile, file)
+				}
+				Expect(createErr).To(BeNil())
+				InitConfig()
+				deleteErr := fs.Remove(file)
+				Expect(deleteErr).To(BeNil())
+				stubs.Reset()
+			}
 		})
 	})
 })

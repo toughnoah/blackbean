@@ -23,12 +23,7 @@ func NewRootCmd(transport http.RoundTripper) *cobra.Command {
 		Short: "Basic interact with es via command line",
 		Long: `blackbean command provides a set of commands to talk with es via cli.
 Besides, blackbean is the name of my favorite french bulldog.`,
-		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			if len(args) != 0 {
-				return nil, cobra.ShellCompDirectiveNoFileComp
-			}
-			return editableResources, cobra.ShellCompDirectiveNoFileComp
-		},
+		ValidArgsFunction: noCompletions,
 	}
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.blackbean.yaml)")

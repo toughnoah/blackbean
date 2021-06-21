@@ -61,7 +61,7 @@ var _ = Describe("cat resources test", func() {
 			}
 			defer monkey.Unpatch(es.GetEnv)
 			for _, tc := range testCases {
-				err := executeCommandForTesting(tc.cmd, tc.mock)
+				_, err := executeCommandForTesting(tc.cmd, tc.mock)
 				Expect(err).Should(BeNil())
 			}
 		})
@@ -79,7 +79,7 @@ var _ = Describe("cat resources test", func() {
 			}
 			defer monkey.Unpatch(es.GetEnv)
 			for _, tc := range testCases {
-				err := executeCommandForTesting(tc.cmd, tc.mock)
+				_, err := executeCommandForTesting(tc.cmd, tc.mock)
 				Expect(err).ShouldNot(BeNil())
 			}
 		})

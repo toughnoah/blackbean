@@ -10,7 +10,7 @@ import (
 )
 
 var _ = Describe("cat resources test", func() {
-	Context("test no filecompletion", func() {
+	Context("test no FileCompletion", func() {
 		It("test noCompletions", func() {
 			home, err := homedir.Dir()
 			stubs := gostub.New()

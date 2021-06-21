@@ -1,10 +1,22 @@
 package cmd
 
 import (
+	"bytes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/spf13/viper"
 	"strings"
 )
+
+var yamlExample = []byte(`cluster:
+  default: 
+    url: https://a.es.com:9200
+    username: Noah
+    password: abc
+  qa:
+    url: https://b.es.com:9200
+    username: blackbean
+    password: abc`)
 
 var _ = Describe("cat resources test", func() {
 	Context("test no filecompletion", func() {
@@ -34,9 +46,32 @@ var _ = Describe("cat resources test", func() {
 			}
 		})
 		It("test noCompletions", func() {
-			out, err := executeCommandForTesting("__complete get ''", nil)
+			r := bytes.NewReader(yamlExample)
+			viper.SetConfigType("yaml")
+			err := viper.ReadConfig(r)
 			Expect(err).To(BeNil())
-			Expect(strings.Contains(out, "health\nnodes\nallocations\nthreadpool\ncachemem\nsegmem\nlargeindices"))
+			testCases := []struct {
+				cmd      string
+				checkOut string
+			}{
+				{
+					cmd:      "__complete get ''",
+					checkOut: "health\nnodes\nallocations\nthreadpool\ncachemem\nsegmem\nlargeindices",
+				},
+				{
+					cmd:      "__complete apply settings --allocation_enable ''",
+					checkOut: "primaries\nnull\n",
+				},
+				{
+					cmd:      "__complete apply settings --cluster ''",
+					checkOut: "default\nqa\n",
+				},
+			}
+			for _, tc := range testCases {
+				out, err := executeCommandForTesting(tc.cmd, nil)
+				Expect(err).To(BeNil())
+				Expect(strings.Contains(out, tc.checkOut))
+			}
 		})
 	})
 })

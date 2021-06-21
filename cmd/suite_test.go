@@ -47,12 +47,12 @@ func executeCommandForTesting(cmdToExecute string, MockTransport http.RoundTripp
 		return TestUrl, TestUsername, TestPassword, nil
 	})
 	root := NewRootCmd(MockTransport)
-	root.SetOut(buf)
 	root.SetErr(buf)
+	root.SetOut(buf)
 	root.SetArgs(args)
-	res := buf.String()
 	if err = root.Execute(); err != nil {
 		return "", err
 	}
+	res := buf.String()
 	return res, nil
 }

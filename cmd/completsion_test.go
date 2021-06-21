@@ -14,7 +14,7 @@ var yamlExample = []byte(`cluster:
     url: https://a.es.com:9200
     username: Noah
     password: abc
-  qa:
+  testCompletion:
     url: https://b.es.com:9200
     username: blackbean
     password: abc`)
@@ -65,7 +65,7 @@ var _ = Describe("cat resources test", func() {
 				},
 				{
 					cmd:      "__complete apply settings --cluster ''",
-					checkOut: "default\nqa\n",
+					checkOut: "testCompletion\n",
 				},
 			}
 			for _, tc := range testCases {

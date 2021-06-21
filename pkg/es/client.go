@@ -10,36 +10,51 @@ import (
 	"strings"
 )
 
+var (
+	NoClusterErr = errors.New("error: read config file from getting cluster")
+	YamFormatErr = errors.New("error: bad config file format, please check docs for guidance")
+	NoEnvErr     = errors.New("error: can' not find any env specification in config file")
+	NoUserErr    = errors.New("error: can' not find 'username' specification in config file")
+	NoPwdErr     = errors.New("error: can' not find 'password' specification in config file")
+	NoUrlErr     = errors.New("error: can' not find 'url' specification in config file")
+)
+
 func GetEnv(env string) (url, username, password string, err error) {
 	if viper.Get(configSpec) == nil {
-		err = errors.New("error: error reading config file from get env")
-		return "", "", "", err
+		return "", "", "", NoClusterErr
 	}
-	conf := viper.Get(configSpec).(map[string]interface{})
-	if conf == nil {
-		err = errors.New("error: can' not find 'cluster' specification in config file")
-		return "", "", "", err
+	conf, ok := viper.Get(configSpec).(map[string]interface{})
+	if !ok {
+		return "", "", "", YamFormatErr
 	}
 	if conf[env] == nil {
-		err = errors.New("error: can' not find any cluster env specification in config file")
-		return "", "", "", err
+		return "", "", "", NoEnvErr
 	}
-	info := conf[env].(map[string]interface{})
+	info, ok := conf[env].(map[string]interface{})
+	if !ok {
+		return "", "", "", YamFormatErr
+	}
 	if info[configUsername] == nil {
-		err = errors.New("error: can' not find 'username' specification in config file")
-		return "", "", "", err
+		return "", "", "", NoUserErr
 	}
-	username = info[configUsername].(string)
+	username, ok = info[configUsername].(string)
+	if !ok {
+		return "", "", "", YamFormatErr
+	}
 	if info[configPassword] == nil {
-		err = errors.New("error: can' not find 'password' specification in config file")
-		return "", "", "", err
+		return "", "", "", NoPwdErr
 	}
-	password = info[configPassword].(string)
+	password, ok = info[configPassword].(string)
+	if !ok {
+		return "", "", "", YamFormatErr
+	}
 	if info[configUrl] == nil {
-		err = errors.New("error: can' not find 'url' specification in config file")
-		return "", "", "", err
+		return "", "", "", NoUrlErr
 	}
-	url = info[configUrl].(string)
+	url, ok = info[configUrl].(string)
+	if !ok {
+		return "", "", "", YamFormatErr
+	}
 	return url, username, password, nil
 }
 
@@ -62,7 +77,7 @@ func NewEsClient(url, username, password string, transport http.RoundTripper) (*
 func CompleteConfigEnv(toComplete string) []string {
 	var envArray []string
 	if viper.Get(configSpec) == nil {
-		log.Fatal("error reading config file from CompleteConfigEnv")
+		log.Fatal("error reading config file for shell completion")
 	}
 	cfg := viper.Get(configSpec).(map[string]interface{})
 	for env := range cfg {

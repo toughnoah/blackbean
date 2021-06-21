@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"github.com/bouk/monkey"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/toughnoah/blackbean/pkg/es"
 	"github.com/toughnoah/blackbean/pkg/fake"
 )
 
@@ -431,11 +429,9 @@ var _ = Describe("put settings test", func() {
 
 	Context("test apply settings", func() {
 		It("test apply", func() {
-
 			mockTr := &fake.MockEsResponse{
 				ResponseString: `{"test":"apply"}`,
 			}
-			defer monkey.Unpatch(es.GetEnv)
 			err := executeCommandForTesting("apply settings -i 2", mockTr)
 			Expect(err).To(BeNil())
 		})

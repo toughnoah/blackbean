@@ -17,20 +17,18 @@ package main
 
 import (
 	"crypto/tls"
-
 	"github.com/spf13/cobra"
-
 	"github.com/toughnoah/blackbean/cmd"
 	"net/http"
+	"os"
 )
 
 func main() {
-	cmd.InitConfig()
-	tr := &http.Transport{
+	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
 		},
 	}
-	rootCmd := cmd.NewRootCmd(tr)
+	rootCmd := cmd.NewRootCmd(transport, os.Stdout)
 	cobra.CheckErr(rootCmd.Execute())
 }

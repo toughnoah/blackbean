@@ -20,6 +20,10 @@ var _ = Describe("put settings test", func() {
 			}
 			_, err := mock.RoundTrip(nil)
 			Expect(err).To(BeNil())
+
+			errMock := MockErrorEsResponse{}
+			_, err = errMock.RoundTrip(nil)
+			Expect(err).ToNot(BeNil())
 		})
 	})
 })

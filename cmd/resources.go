@@ -42,7 +42,9 @@ type CatObject struct {
 }
 
 func (o *CatObject) catResources() (err error) {
-
+	if err = es.Validate(o.Resource, resources); err != nil {
+		return
+	}
 	var res *esapi.Response
 	switch o.Resource {
 	case "health":

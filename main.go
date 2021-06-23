@@ -25,7 +25,6 @@ import (
 )
 
 func main() {
-	cmd.InitConfig()
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,

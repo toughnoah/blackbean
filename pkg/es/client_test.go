@@ -191,7 +191,7 @@ var _ = Describe("put settings test", func() {
 				viper.SetConfigType("yaml")
 				err := viper.ReadConfig(r)
 				Expect(err).To(BeNil())
-				url, user, pwd, err := GetEnv(tc.env)
+				url, user, pwd, err := GetEnv()
 				Expect(err).To(tc.err)
 				Expect(url).To(Equal(tc.url))
 				Expect(user).To(Equal(tc.user))

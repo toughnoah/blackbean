@@ -14,7 +14,6 @@ import (
 
 var (
 	cfgFile string
-	Cluster string
 )
 
 func NewRootCmd(transport http.RoundTripper) *cobra.Command {
@@ -25,26 +24,26 @@ func NewRootCmd(transport http.RoundTripper) *cobra.Command {
 Besides, blackbean is the name of my favorite french bulldog.`,
 		ValidArgsFunction: noCompletions,
 	}
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.blackbean.yaml)")
-
-	rootCmd.PersistentFlags().StringVarP(&Cluster, "cluster", "c", "default", "to specify a es cluster")
-
+	flags := rootCmd.PersistentFlags()
+	flags.StringVar(&cfgFile, "config", "", "config file (default is $HOME/.blackbean.yaml)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	err := rootCmd.RegisterFlagCompletionFunc("cluster", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return es.CompleteConfigEnv(toComplete), cobra.ShellCompDirectiveNoFileComp
-	})
-
+	// We can safely ignore any errors that flags.Parse encounters since
+	// those errors will be caught later during the call to cmd.Execution.
+	// This call is required to gather configuration information prior to
+	// execution.
+	flags.ParseErrorsWhitelist.UnknownFlags = true
+	err := flags.Parse(os.Args[1:])
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n\n", err)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(-1)
 	}
-	url, username, password, err := es.GetEnv(Cluster)
+	InitConfig()
+	url, username, password, err := es.GetProfile()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n\n", err)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(-1)
 	}
 
@@ -53,9 +52,11 @@ Besides, blackbean is the name of my favorite french bulldog.`,
 		fmt.Fprintf(os.Stderr, "error: %v\n\n", err)
 		os.Exit(-1)
 	}
+	rootCmd.AddCommand(completionCmd)
 	rootCmd.AddCommand(catClusterResources(cli))
 	rootCmd.AddCommand(applyClusterSettings(cli))
-	rootCmd.AddCommand(completionCmd)
+	rootCmd.AddCommand(getSnapshot(cli))
+	rootCmd.AddCommand(useCluster())
 	return rootCmd
 }
 

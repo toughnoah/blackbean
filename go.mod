@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/bouk/monkey v1.0.2
 	github.com/elastic/go-elasticsearch/v7 v7.13.1
+	github.com/ghodss/yaml v1.0.0
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onsi/ginkgo v1.16.4

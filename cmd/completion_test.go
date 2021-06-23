@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
@@ -20,7 +19,7 @@ var yamlExample = []byte(`cluster:
     password: abc`)
 
 var _ = Describe("cat resources test", func() {
-	Context("test no filecompletion", func() {
+	Context("test no FileCompletion", func() {
 		It("test noCompletions", func() {
 			noCompletions(nil, nil, "")
 		})
@@ -71,7 +70,6 @@ var _ = Describe("cat resources test", func() {
 			for _, tc := range testCases {
 				out, err := executeCommandForTesting(tc.cmd, nil)
 				Expect(err).To(BeNil())
-				fmt.Println(out)
 				Expect(strings.Contains(out, tc.checkOut))
 			}
 		})

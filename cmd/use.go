@@ -42,6 +42,7 @@ func (m *Modify) ModifyCurrentCluster(cluster string) error {
 	var blackbeanConfig map[string]interface{}
 	path := m.GetConfig()
 	file, err := ioutil.ReadFile(path)
+	fmt.Println(string(file))
 	if err != nil {
 		return err
 	}
@@ -51,6 +52,9 @@ func (m *Modify) ModifyCurrentCluster(cluster string) error {
 	}
 	checked := m.CheckClusterConfigExists(cluster)
 	if !checked {
+		if m.err != nil {
+			return m.err
+		}
 		return fmt.Errorf("no valid resources exists with the name: %q", cluster)
 	}
 	m.ModifyConfigFile(cluster, path, blackbeanConfig)
@@ -81,7 +85,6 @@ func (m *Modify) GetConfig() (path string) {
 }
 func (m *Modify) CheckClusterConfigExists(cluster string) (checked bool) {
 	if m.err != nil {
-		fmt.Println(m.err)
 		return
 	}
 	if viper.Get(es.ConfigSpec) == nil {

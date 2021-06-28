@@ -59,8 +59,9 @@ var _ = Describe("cat resources test", func() {
 			}
 
 			for _, tc := range testCases {
-				_, err := executeCommand(tc.cmd, tc.mock)
+				out, err := executeCommand(tc.cmd, tc.mock)
 				Expect(err).Should(BeNil())
+				Expect(out).Should(Equal("[200 OK] " + tc.mock.ResponseString + "\n"))
 			}
 		})
 		It("test cat command with invalid resource", func() {

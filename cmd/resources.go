@@ -61,9 +61,6 @@ func (o *CatObject) catResources() (res *esapi.Response, err error) {
 		res, err = o.catSegmentsMemory()
 	case "largeindices":
 		res, err = o.catLargeIndices()
-	default:
-		err = es.NoResourcesError(o.Resource)
-		return
 	}
 	if err != nil {
 		err = errors.Wrap(err, "failed when sending cat request")

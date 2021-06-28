@@ -74,9 +74,12 @@ func TestGetAllRepos(t *testing.T) {
 		so := Snapshot{
 			client: fakeClient,
 		}
-		for _, c := range tc.want {
-			require.Equal(t, true, es.Check(c, so.getAllRepos()))
+		if tc.want != nil {
+			for _, c := range tc.want {
+				require.Equal(t, true, es.Check(c, so.getAllRepos()))
+			}
+		} else {
+			require.Equal(t, []string(nil), so.getAllRepos())
 		}
-
 	}
 }

@@ -30,7 +30,14 @@ current: default
 apply       completion  get         help
 ```
 ```console
-[root@noah ~]# blackbean get
+[root@noah ~]# echo "source <(blackbean completion bash)" >> ~/.bashrc
+```
+```console
+[root@noah ~]# blackbean
+apply       completion  get         help
+```
+```console
+[root@docker ~]# blackbean get
 allocations   cachemem      health        largeindices  nodes         segmem        threadpoo
 ```
 

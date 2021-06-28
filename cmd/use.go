@@ -81,6 +81,7 @@ func (m *Modify) GetConfig() (path string) {
 }
 func (m *Modify) CheckClusterConfigExists(cluster string) (checked bool) {
 	if m.err != nil {
+		fmt.Println(m.err)
 		return
 	}
 	if viper.Get(es.ConfigSpec) == nil {
@@ -92,7 +93,6 @@ func (m *Modify) CheckClusterConfigExists(cluster string) (checked bool) {
 		m.err = errors.New("wrong 'cluster' type, want map")
 		return
 	}
-	fmt.Println(clusterMap)
 	for k, _ := range clusterMap {
 		if k == cluster {
 			checked = true

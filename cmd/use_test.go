@@ -16,6 +16,7 @@ func TestUse(t *testing.T) {
 	file := filepath.Join(home, filename)
 	err = ioutil.WriteFile(file, yamlExample, 0755)
 	require.NoError(t, err)
+	InitConfig()
 	out, err := executeCommand("use backup", nil)
 	require.NoError(t, err)
 	require.Equal(t, out, "change to  cluster: backup\n\n")

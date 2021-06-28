@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
@@ -14,13 +13,14 @@ var yamlExample = []byte(`cluster:
     url: https://a.es.com:9200
     username: Noah
     password: abc
-  testCompletion:
-    url: https://b.es.com:9200
-    username: blackbean
-    password: abc`)
+  backup: 
+    url: https://a.es.com:9200
+    username: Noah
+    password: abc
+current: default`)
 
 var _ = Describe("cat resources test", func() {
-	Context("test no filecompletion", func() {
+	Context("test no FileCompletion", func() {
 		It("test noCompletions", func() {
 			noCompletions(nil, nil, "")
 		})
@@ -29,7 +29,7 @@ var _ = Describe("cat resources test", func() {
 				cmd string
 			}{
 				{
-					cmd: "completion bash",
+					cmd: "completion bash ",
 				},
 				{
 					cmd: "completion zsh",
@@ -42,7 +42,7 @@ var _ = Describe("cat resources test", func() {
 				},
 			}
 			for _, tc := range testCases {
-				_, err := executeCommandForTesting(tc.cmd, nil)
+				_, err := executeCommand(tc.cmd, nil)
 				Expect(err).To(BeNil())
 			}
 		})
@@ -63,15 +63,10 @@ var _ = Describe("cat resources test", func() {
 					cmd:      "__complete apply settings --allocation_enable ''",
 					checkOut: "primaries\nnull\n",
 				},
-				{
-					cmd:      "__complete apply settings --cluster ''",
-					checkOut: "testCompletion\n",
-				},
 			}
 			for _, tc := range testCases {
-				out, err := executeCommandForTesting(tc.cmd, nil)
+				out, err := executeCommand(tc.cmd, nil)
 				Expect(err).To(BeNil())
-				fmt.Println(out)
 				Expect(strings.Contains(out, tc.checkOut))
 			}
 		})

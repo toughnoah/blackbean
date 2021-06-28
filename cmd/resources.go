@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/toughnoah/blackbean/pkg/es"
+	"io"
 )
 
 var resources = []string{"health", "nodes", "allocations", "threadpool", "cachemem", "segmem", "largeindices"}
 
-func catClusterResources(cli *elasticsearch.Client) *cobra.Command {
+func catClusterResources(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	var command = &cobra.Command{
 		Use:   "get [resource]",
 		Short: "get allocation/nodes/health/nodes/threadpool/cache memory/segments memory/large indices.",
@@ -27,10 +29,9 @@ func catClusterResources(cli *elasticsearch.Client) *cobra.Command {
 				Client:   cli,
 				Resource: args[0],
 			}
-			if err := co.catResources(); err != nil {
-				return err
-			}
-			return nil
+			res, err := co.catResources()
+			fmt.Fprintf(out, "%s\n", res)
+			return err
 		},
 	}
 	return command
@@ -41,9 +42,10 @@ type CatObject struct {
 	Resource string
 }
 
-func (o *CatObject) catResources() (err error) {
-
-	var res *esapi.Response
+func (o *CatObject) catResources() (res *esapi.Response, err error) {
+	if err = es.Validate(o.Resource, resources); err != nil {
+		return
+	}
 	switch o.Resource {
 	case "health":
 		res, err = o.catHealth()
@@ -63,7 +65,9 @@ func (o *CatObject) catResources() (err error) {
 		err = es.NoResourcesError(o.Resource)
 		return
 	}
-	fmt.Println(res)
+	if err != nil {
+		err = errors.Wrap(err, "failed when sending cat request")
+	}
 	return
 }
 

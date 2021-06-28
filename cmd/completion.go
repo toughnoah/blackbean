@@ -16,16 +16,17 @@ limitations under the License.
 package cmd
 
 import (
-	"os"
-
 	"github.com/spf13/cobra"
+	"io"
 )
 
-// completionCmd represents the completion command
-var completionCmd = &cobra.Command{
-	Use:   "completion [bash|zsh|fish|powershell]",
-	Short: "Generate completion script",
-	Long: `To load completions:
+// NewCompletionCmd completionCmd represents the completion command
+func NewCompletionCmd(out io.Writer) *cobra.Command {
+
+	var completionCmd = &cobra.Command{
+		Use:   "completion [bash|zsh|fish|powershell]",
+		Short: "Generate completion script",
+		Long: `To load completions:
 
 Bash:
 
@@ -64,21 +65,23 @@ PowerShell:
   PS> blackbean completion powershell > blackbean.ps1
   # and source this file from your PowerShell profile.
 `,
-	DisableFlagsInUseLine: true,
-	ValidArgs:             []string{"bash", "zsh", "fish", "powershell"},
-	Args:                  cobra.ExactValidArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		switch args[0] {
-		case "bash":
-			_ = cmd.Root().GenBashCompletion(os.Stdout)
-		case "zsh":
-			_ = cmd.Root().GenZshCompletion(os.Stdout)
-		case "fish":
-			_ = cmd.Root().GenFishCompletion(os.Stdout, true)
-		case "powershell":
-			_ = cmd.Root().GenPowerShellCompletionWithDesc(os.Stdout)
-		}
-	},
+		DisableFlagsInUseLine: true,
+		ValidArgs:             []string{"bash", "zsh", "fish", "powershell"},
+		Args:                  cobra.ExactValidArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			switch args[0] {
+			case "bash":
+				_ = cmd.Root().GenBashCompletion(out)
+			case "zsh":
+				_ = cmd.Root().GenZshCompletion(out)
+			case "fish":
+				_ = cmd.Root().GenFishCompletion(out, true)
+			case "powershell":
+				_ = cmd.Root().GenPowerShellCompletionWithDesc(out)
+			}
+		},
+	}
+	return completionCmd
 }
 
 // Function to disable file completion

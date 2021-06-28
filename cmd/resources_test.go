@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"github.com/bouk/monkey"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/toughnoah/blackbean/pkg/es"
 	"github.com/toughnoah/blackbean/pkg/fake"
 )
 
@@ -59,9 +57,9 @@ var _ = Describe("cat resources test", func() {
 					},
 				},
 			}
-			defer monkey.Unpatch(es.GetEnv)
+
 			for _, tc := range testCases {
-				_, err := executeCommandForTesting(tc.cmd, tc.mock)
+				_, err := executeCommand(tc.cmd, tc.mock)
 				Expect(err).Should(BeNil())
 			}
 		})
@@ -77,9 +75,8 @@ var _ = Describe("cat resources test", func() {
 					},
 				},
 			}
-			defer monkey.Unpatch(es.GetEnv)
 			for _, tc := range testCases {
-				_, err := executeCommandForTesting(tc.cmd, tc.mock)
+				_, err := executeCommand(tc.cmd, tc.mock)
 				Expect(err).ShouldNot(BeNil())
 			}
 		})

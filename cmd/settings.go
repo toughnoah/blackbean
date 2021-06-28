@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/toughnoah/blackbean/pkg/es"
+	"io"
 	"os"
 )
 
@@ -255,7 +257,7 @@ func NewSettings() *Settings {
 	return &Settings{Persistent: &persistent{}}
 }
 
-func applyClusterSettings(cli *elasticsearch.Client) *cobra.Command {
+func applyClusterSettings(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	var (
 		clusterConcurrentRebalanced    string
 		nodeConcurrentRecoveries       string
@@ -283,7 +285,8 @@ func applyClusterSettings(cli *elasticsearch.Client) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if args[0] != "settings" {
-				return es.NoResourcesError(args[0])
+				fmt.Fprintf(os.Stderr, "error: %v\n", es.NoResourcesError(args[0]))
+				os.Exit(-1)
 			}
 			po := PutObject{Client: cli}
 			settings := NewSettings()
@@ -301,11 +304,8 @@ func applyClusterSettings(cli *elasticsearch.Client) *cobra.Command {
 				WithMaxCompilationsRate(maxCompilationsRate)
 
 			res, err := po.putSettings(settings)
-			if err != nil {
-				return err
-			}
-			fmt.Println(res)
-			return nil
+			fmt.Fprintf(out, "%s/n", res)
+			return err
 		},
 	}
 	f := command.Flags()
@@ -330,7 +330,7 @@ func applyClusterSettings(cli *elasticsearch.Client) *cobra.Command {
 	})
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n\n", err)
+		fmt.Fprintf(os.Stderr, "%+v\n", err)
 		os.Exit(-1)
 	}
 	return command
@@ -343,12 +343,12 @@ type PutObject struct {
 func (o *PutObject) putSettings(settings *Settings) (*esapi.Response, error) {
 	data, err := json.Marshal(settings)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to Marshal settings")
 	}
 	reader := bytes.NewReader(data)
 	putSettings, err := o.Client.Cluster.PutSettings(reader, o.Client.Cluster.PutSettings.WithPretty())
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed when sending put request")
 	}
 	return putSettings, err
 }

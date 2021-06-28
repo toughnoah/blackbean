@@ -42,7 +42,6 @@ func (m *Modify) ModifyCurrentCluster(cluster string) error {
 	var blackbeanConfig map[string]interface{}
 	path := m.GetConfig()
 	file, err := ioutil.ReadFile(path)
-	fmt.Println(string(file))
 	if err != nil {
 		return err
 	}

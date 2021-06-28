@@ -6,7 +6,22 @@
 
 The blackbean is a command tool for elasticsearch operations by using cobra. Besides, blackbean is the name of my lovely French bulldog.
 
-## shell completion
+## Configuration
+Define your config file firstly, and specify `current` as one of your cluster.
+```
+cluster:
+  default:
+    url: https://a.es.com:9200
+    username: Noah
+    password: abc
+  backup:
+    url: https://b.es.com:9200
+    username: Noah
+    password: abc
+current: default
+```
+
+## Shell completion
 ```console
 [root@noah ~]# echo "source <(blackbean completion bash)" >> ~/.bashrc
 ```
@@ -15,7 +30,7 @@ The blackbean is a command tool for elasticsearch operations by using cobra. Bes
 apply       completion  get         help
 ```
 ```console
-[root@docker ~]# blackbean get
+[root@noah ~]# blackbean get
 allocations   cachemem      health        largeindices  nodes         segmem        threadpoo
 ```
 

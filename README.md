@@ -37,7 +37,7 @@ apply       completion  get         help
 apply       completion  get         help
 ```
 ```console
-[root@docker ~]# blackbean get
+[root@noah ~]# blackbean get
 allocations   cachemem      health        largeindices  nodes         segmem        threadpoo
 ```
 

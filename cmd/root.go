@@ -53,6 +53,7 @@ Besides, blackbean is the name of my favorite french bulldog.`,
 	rootCmd.AddCommand(repo(cli, out))
 	rootCmd.AddCommand(useCluster(out))
 	rootCmd.AddCommand(current(out))
+	rootCmd.AddCommand(Index(cli, out))
 	return rootCmd
 }
 

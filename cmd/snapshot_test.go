@@ -101,3 +101,39 @@ func TestGetSnapshot(t *testing.T) {
 	_, err = so.getSnapshot("", "")
 	require.NoError(t, err)
 }
+
+func TestSnapshotCommand(t *testing.T) {
+	testCases := []struct {
+		name string
+		cmd  string
+		mock *fake.MockEsResponse
+	}{
+		{
+			name: "test get cmd",
+			cmd:  "snapshot get snapshot01 -r repo",
+			mock: &fake.MockEsResponse{
+				ResponseString: `{"test":" test get"}`,
+			},
+		},
+		{
+			name: "test create cmd",
+			cmd:  "snapshot create snapshot01 -r repo",
+			mock: &fake.MockEsResponse{
+				ResponseString: `{"acknowledge":"true"}`,
+			},
+		},
+		{
+			name: "test delete cmd",
+			cmd:  "snapshot delete snapshot01 -r repo",
+			mock: &fake.MockEsResponse{
+				ResponseString: `{"acknowledge":"true"}`,
+			},
+		},
+	}
+	for _, tc := range testCases {
+		out, err := executeCommand(tc.cmd, tc.mock)
+		require.NoError(t, err)
+		require.Equal(t, out, "[200 OK] "+tc.mock.ResponseString+"\n")
+	}
+
+}

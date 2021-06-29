@@ -220,3 +220,28 @@ func TestValidate(t *testing.T) {
 	}
 
 }
+
+func TestCheck(t *testing.T) {
+	testCases := []struct {
+		name        string
+		checkString string
+		checkSlice  []string
+		want        bool
+	}{
+		{
+			name:        "check success",
+			checkString: "a",
+			checkSlice:  []string{"a", "b", "c"},
+			want:        true,
+		},
+		{
+			name:        "check failed",
+			checkString: "a",
+			checkSlice:  []string{"b", "c"},
+			want:        false,
+		},
+	}
+	for _, tc := range testCases {
+		require.Equal(t, tc.want, Check(tc.checkString, tc.checkSlice))
+	}
+}

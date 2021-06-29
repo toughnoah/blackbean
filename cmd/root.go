@@ -35,19 +35,16 @@ Besides, blackbean is the name of my favorite french bulldog.`,
 	// This call is required to gather configuration information prior to
 	// execution.
 	flags.ParseErrorsWhitelist.UnknownFlags = true
-	err := flags.Parse(os.Args[1:])
-	if err != nil {
-		log.Fatal(err)
-	}
+	flags.Parse(os.Args[1:])
 	InitConfig()
 	profile, err := es.GetProfile()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Get Profile error %v", err)
 	}
 
 	cli, err := es.NewEsClient(profile.Info[es.ConfigUrl], profile.Info[es.ConfigUsername], profile.Info[es.ConfigPassword], transport)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("New client error %v", err)
 	}
 	rootCmd.AddCommand(NewCompletionCmd(out))
 	rootCmd.AddCommand(catClusterResources(cli, out))

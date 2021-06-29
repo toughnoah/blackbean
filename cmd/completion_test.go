@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
+	"github.com/toughnoah/blackbean/pkg/fake"
 	"strings"
 )
 
@@ -54,6 +55,7 @@ var _ = Describe("cat resources test", func() {
 			testCases := []struct {
 				cmd      string
 				checkOut string
+				mock     *fake.MockEsResponse
 			}{
 				{
 					cmd:      "__complete get ''",
@@ -63,9 +65,58 @@ var _ = Describe("cat resources test", func() {
 					cmd:      "__complete apply settings --allocation_enable ''",
 					checkOut: "primaries\nnull\n",
 				},
+				{
+					cmd:      "__complete repo get ''",
+					checkOut: "repoA\nrepoB\n",
+					mock: &fake.MockEsResponse{
+						ResponseString: `{"repoA":"a","repoB":"b"}`,
+					},
+				},
+				{
+					cmd:      "__complete repo get test -s ''",
+					checkOut: "snapshot01\nsnapshot01\n",
+					mock: &fake.MockEsResponse{
+						ResponseString: `{"snapshots":[{"snapshot":"snapshot01"}, {"snapshot":"snapshot01"}]}`,
+					},
+				},
+				{
+					cmd:      "__complete repo delete ''",
+					checkOut: "repoA\nrepoB\n",
+					mock: &fake.MockEsResponse{
+						ResponseString: `{"repoA":"a","repoB":"b"}`,
+					},
+				},
+				{
+					cmd:      "__complete snapshot get -r ''",
+					checkOut: "repoA\nrepoB\n",
+					mock: &fake.MockEsResponse{
+						ResponseString: `{"repoA":"a","repoB":"b"}`,
+					},
+				},
+				{
+					cmd:      "__complete snapshot get -r repoA ''",
+					checkOut: "snapshot01\nsnapshot01\n",
+					mock: &fake.MockEsResponse{
+						ResponseString: `{"snapshots":[{"snapshot":"snapshot01"}, {"snapshot":"snapshot01"}]}`,
+					},
+				},
+				{
+					cmd:      "__complete snapshot delete -r repoA ''",
+					checkOut: "snapshot01\nsnapshot01\n",
+					mock: &fake.MockEsResponse{
+						ResponseString: `{"snapshots":[{"snapshot":"snapshot01"}, {"snapshot":"snapshot01"}]}`,
+					},
+				},
+				{
+					cmd:      "__complete snapshot delete -r ''",
+					checkOut: "repoA\nrepoB\n",
+					mock: &fake.MockEsResponse{
+						ResponseString: `{"repoA":"a","repoB":"b"}`,
+					},
+				},
 			}
 			for _, tc := range testCases {
-				out, err := executeCommand(tc.cmd, nil)
+				out, err := executeCommand(tc.cmd, tc.mock)
 				Expect(err).To(BeNil())
 				Expect(strings.Contains(out, tc.checkOut))
 			}

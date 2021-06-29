@@ -27,7 +27,7 @@ func useCluster(out io.Writer) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			m := &Modify{}
-			fmt.Fprintf(out, "change to  cluster: %s\n\n", args[0])
+			fmt.Fprintf(out, "change to cluster: %s\n\n", args[0])
 			return m.ModifyCurrentCluster(args[0])
 		},
 	}

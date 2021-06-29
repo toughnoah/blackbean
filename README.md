@@ -27,14 +27,7 @@ current: default
 ```
 ```console
 [root@noah ~]# blackbean
-apply       completion  get         help
-```
-```console
-[root@noah ~]# echo "source <(blackbean completion bash)" >> ~/.bashrc
-```
-```console
-[root@noah ~]# blackbean
-apply       completion  get         help
+apply       completion  current     get         help        repo        snapshot    use
 ```
 ```console
 [root@noah ~]# blackbean get
@@ -43,7 +36,9 @@ allocations   cachemem      health        largeindices  nodes         segmem    
 
 ##Command
 ```console
-[root@noah ~]# blackbean -h
+[root@noah ~]# blackbean [tab][tab]
+apply       completion  current     get         help        repo        snapshot    use
+[root@noah ~]# blackbean
 blackbean command provides a set of commands to talk with es via cli.
 Besides, blackbean is the name of my favorite french bulldog.
 
@@ -53,20 +48,35 @@ Usage:
 Available Commands:
   apply       apply cluster settings.
   completion  Generate completion script
+  current     show current cluster context
   get         get allocation/nodes/health/nodes/threadpool/cache memory/segments memory/large indices.
   help        Help about any command
+  repo        repo operations
+  snapshot    snapshot operations
+  use         change current cluster context
 
 Flags:
-  -c, --cluster string   to specify a es cluster (default "default")
-      --config string    config file (default is $HOME/.blackbean.yaml)
-  -h, --help             help for blackbean
-  -t, --toggle           Help message for toggle
+      --config string   config file (default is $HOME/.blackbean.yaml)
+  -h, --help            help for blackbean
+  -t, --toggle          Help message for toggle
 
 Use "blackbean [command] --help" for more information about a command.
 ```
+### Use
+```console
+[root@noah ~]# blackbean current
+current using cluster: qa
+```
+```console
+[root@noah ~]# blackbean use [tab][tab]
+prod  qa
+[root@noah ~]# blackbean use qa
+change to cluster: qa
+
+```
 ### Get info
 ```console
-[root@noah ~]# blackbean get health
+[root@noah ~]# blackbean get health 
 [200 OK] epoch      timestamp cluster       status node.total node.data shards  pri relo init unassign pending_tasks max_task_wait_time active_shards_percent
 1624371902 14:25:02  black-cluster green          12         9   9304 4652    0    0        0             0                  -                100.0%
 ```
@@ -101,6 +111,49 @@ Flags:
 Global Flags:
   -c, --cluster string   to specify a es cluster (default "default")
       --config string    config file (default is $HOME/.blackbean.yaml)
+```
+### Repo
+```console
+[root@noah ~]# blackbean repo
+repo operations ... wordless
+
+Usage:
+  blackbean repo [command]
+
+Available Commands:
+  create      create specific snapshots
+  delete      delete specific snapshots
+  get         get specific repository
+
+Flags:
+  -h, --help   help for repo
+
+Global Flags:
+      --config string   config file (default is $HOME/.blackbean.yaml)
+
+Use "blackbean repo [command] --help" for more information about a command.
+```
+### Snapshot
+```console
+[root@noah ~]# blackbean snapshot
+snapshot operations ... wordless
+
+Usage:
+  blackbean snapshot [command]
+
+Available Commands:
+  create      create specific snapshots
+  delete      delete specific snapshots
+  get         get specific snapshots
+  restore     get specific index to restore
+
+Flags:
+  -h, --help   help for snapshot
+
+Global Flags:
+      --config string   config file (default is $HOME/.blackbean.yaml)
+
+Use "blackbean snapshot [command] --help" for more information about a command.
 ```
 
 ## Contact Me

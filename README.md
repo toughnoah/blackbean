@@ -26,11 +26,11 @@ current: default
 [root@noah ~]# echo "source <(blackbean completion bash)" >> ~/.bashrc
 ```
 ```console
-[root@noah ~]# blackbean
+[root@noah ~]# blackbean [tab][tab]
 apply       completion  current     get         help        repo        snapshot    use
 ```
 ```console
-[root@docker ~]# blackbean get
+[root@docker ~]# blackbean get [tab][tab]
 allocations   cachemem      health        largeindices  nodes         segmem        threadpoo
 ```
 

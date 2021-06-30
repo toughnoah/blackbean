@@ -114,6 +114,13 @@ var _ = Describe("cat resources test", func() {
 						ResponseString: `{"repoA":"a","repoB":"b"}`,
 					},
 				},
+				{
+					cmd:      "__complete index search ''",
+					checkOut: "index1\nindex2\n",
+					mock: &fake.MockEsResponse{
+						ResponseString: `{"index1":"a","index2":"b"}`,
+					},
+				},
 			}
 			for _, tc := range testCases {
 				out, err := executeCommand(tc.cmd, tc.mock)

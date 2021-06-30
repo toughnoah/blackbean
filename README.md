@@ -95,18 +95,18 @@ Usage:
 
 Flags:
   -e, --allocation_enable string                   to set allocation enable value, primaries or null
-  -f, --breaker_fielddata string                   to set breaker_fielddata value, such as 10
-  -r, --breaker_request string                     to set breaker_request value, such as 10
-  -t, --breaker_total string                       to set breaker_total value, such as 10
+  -f, --breaker_fielddata string                   to set breaker_fielddata value, such as 60%
+  -r, --breaker_request string                     to set breaker_request value, such as 60%
+  -t, --breaker_total string                       to set breaker_total value, such as 60%
   -a, --cluster_concurrent_rebalanced string       to set cluster_concurrent_rebalanced value, such as 10
   -h, --help                                       help for apply
   -b, --max_bytes_per_sec string                   to set indices recovery max_bytes_per_sec, default 40
-  -m, --max_compilations_rate string               to set max_compilations_rate value, such as 75/5
+  -m, --max_compilations_rate string               to set max_compilations_rate value, such as 75/5m
   -s, --max_shards_per_node string                 to set max_shards_per_node value, such as 1000
   -n, --node_concurrent_recoveries string          to set node_concurrent_recoveries value, such as 10
   -i, --node_initial_primaries_recoveries string   to set node_initial_primaries_recoveries value, such as 10
-  -w, --watermark_high string                      to set watermark_high value, such as 10
-  -l, --watermark_low string                       to set watermark_low value, such as 10
+  -w, --watermark_high string                      to set watermark_high value, such as 85%
+  -l, --watermark_low string                       to set watermark_low value, such as 90%
 
 Global Flags:
   -c, --cluster string   to specify a es cluster (default "default")
@@ -154,6 +154,79 @@ Global Flags:
       --config string   config file (default is $HOME/.blackbean.yaml)
 
 Use "blackbean snapshot [command] --help" for more information about a command.
+```
+
+### Index Search
+```console
+[root@noah ~]# blackbean index
+index operations ... wordless
+
+Usage:
+  blackbean index [command]
+
+Available Commands:
+  get         get index from cluster
+  search      search index from cluster
+
+Flags:
+  -h, --help   help for index
+
+Global Flags:
+      --config string   config file (default is $HOME/.blackbean.yaml)
+
+Use "blackbean index [command] --help" for more information about a command.
+```
+```console
+[root@noah ~]# blackbean index search test-* -f query.json
+[200 OK] {
+  "took" : 172,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 16600,
+      "relation" : "eq"
+    },
+    "max_score" : 1.0,
+    "hits" : [
+      {
+  ...
+```
+```console
+[root@noah ~]# blackbean index search test-* -f query.yaml
+[200 OK] {
+  "took" : 172,
+  "timed_out" : false,
+  ...
+```
+```console
+[root@noah ~]# blackbean index search test-* -d '{"query":{"match_all":{}}}'
+[200 OK] {
+  "took" : 172,
+  "timed_out" : false,
+  ...
+```
+### Index Get
+```console
+[root@noah ~]# blackbean index get test-2021.06
+[200 OK] {
+  "test-2021.06" : {
+    "aliases" : { },
+    "mappings" : {
+      "dynamic_templates" : [
+        {
+          "strings" : {
+            "match_mapping_type" : "string",
+            "mapping" : {
+              "type" : "keyword"
+            }
+    ...
+
 ```
 
 ## Contact Me

@@ -34,7 +34,7 @@ apply       completion  current     get         help        repo        snapshot
 allocations   cachemem      health        largeindices  nodes         segmem        threadpoo
 ```
 
-##Command
+## Command
 ```console
 [root@noah ~]# blackbean [tab][tab]
 apply       completion  current     get         help        repo        snapshot    use

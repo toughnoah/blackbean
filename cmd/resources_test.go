@@ -15,43 +15,43 @@ var _ = Describe("cat resources test", func() {
 				mock *fake.MockEsResponse
 			}{
 				{
-					cmd: "get health",
+					cmd: "cat health",
 					mock: &fake.MockEsResponse{
 						ResponseString: `{"test":"get health"}`,
 					},
 				},
 				{
-					cmd: "get allocations",
+					cmd: "cat allocations",
 					mock: &fake.MockEsResponse{
 						ResponseString: `{"test":"get health"}`,
 					},
 				},
 				{
-					cmd: "get nodes",
+					cmd: "cat nodes",
 					mock: &fake.MockEsResponse{
 						ResponseString: `{"test":"get nodes"}`,
 					},
 				},
 				{
-					cmd: "get threadpool",
+					cmd: "cat threadpool",
 					mock: &fake.MockEsResponse{
 						ResponseString: `{"test":"get threadpool"}`,
 					},
 				},
 				{
-					cmd: "get cachemem",
+					cmd: "cat cachemem",
 					mock: &fake.MockEsResponse{
 						ResponseString: `{"test":"get cachemem"}`,
 					},
 				},
 				{
-					cmd: "get segmem",
+					cmd: "cat segmem",
 					mock: &fake.MockEsResponse{
 						ResponseString: `{"test":"get segmem"}`,
 					},
 				},
 				{
-					cmd: "get largeindices",
+					cmd: "cat largeindices",
 					mock: &fake.MockEsResponse{
 						ResponseString: `{"test":"get largeindices"}`,
 					},

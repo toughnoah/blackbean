@@ -33,7 +33,6 @@ func TestUse(t *testing.T) {
 }
 
 func TestModify_CheckClusterConfigExists(t *testing.T) {
-
 	m := new(Modify)
 	viper.SetConfigType("yaml")
 	_ = viper.ReadConfig(bytes.NewReader([]byte("")))

@@ -1,12 +1,19 @@
 package es
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/toughnoah/blackbean/pkg/util"
+	"golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/transform"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -20,6 +27,10 @@ const (
 	ConfigPassword = "password"
 
 	ConfigUrl = "url"
+
+	EmptyData = "{}"
+
+	EmptyFile = ""
 )
 
 func GetProfile() (*Profile, error) {
@@ -85,4 +96,50 @@ func Check(i string, env []string) bool {
 		}
 	}
 	return false
+}
+
+func DecodeFromFile(filename string) ([]byte, error) {
+	f, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	utf16bom := unicode.BOMOverride(unicode.UTF8.NewDecoder())
+	reader := transform.NewReader(f, utf16bom)
+	raw := new(json.RawMessage)
+	d := util.NewYAMLOrJSONDecoder(reader, 4096)
+	if err = d.Decode(raw); err != nil {
+		if err == io.EOF {
+			return []byte(`{}`), nil
+		}
+		return nil, fmt.Errorf("error parsing %s: %v", filename, err)
+	}
+	return *raw, nil
+}
+
+type RequestBody struct {
+	Filename string
+	Data     string
+}
+
+func AddRequestBodyFlag(cmd *cobra.Command, body *RequestBody) {
+	f := cmd.Flags()
+	f.StringVarP(&body.Filename, "filename", "f", "", "get request body from specific file.")
+	f.StringVarP(&body.Data, "data", "d", "{}", "specify request body")
+}
+
+func GetRawRequestBody(req *RequestBody) (raw []byte, err error) {
+	if req.Filename == EmptyFile && req.Data == EmptyData {
+		return
+	}
+	if req.Filename != EmptyFile {
+		return DecodeFromFile(req.Filename)
+	} else {
+		raw = []byte(req.Data)
+		return
+	}
+}
+
+func GetFlagValue(cmd *cobra.Command, flag string) string {
+	return cmd.Flags().Lookup(flag).Value.String()
 }

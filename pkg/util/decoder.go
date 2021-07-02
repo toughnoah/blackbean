@@ -59,16 +59,16 @@ func Unmarshal(data []byte, v interface{}) error {
 	}
 }
 
-// ToJSON converts a single YAML document into a JSON document
-// or returns an error. If the document appears to be JSON the
-// YAML decoding path is not used (so that error messages are
-// JSON specific).
-func ToJSON(data []byte) ([]byte, error) {
-	if hasJSONPrefix(data) {
-		return data, nil
-	}
-	return yaml.YAMLToJSON(data)
-}
+//// ToJSON converts a single YAML document into a JSON document
+//// or returns an error. If the document appears to be JSON the
+//// YAML decoding path is not used (so that error messages are
+//// JSON specific).
+//func ToJSON(data []byte) ([]byte, error) {
+//	if hasJSONPrefix(data) {
+//		return data, nil
+//	}
+//	return yaml.YAMLToJSON(data)
+//}
 
 // YAMLToJSONDecoder decodes YAML documents from an io.Reader by
 // separating individual documents. It first converts the YAML

@@ -172,19 +172,19 @@ Usage:
   blackbean apply [resource] [flags]
 
 Flags:
-  -e, --allocation_enable string                   to set allocation enable value, primaries or null
-  -f, --breaker_fielddata string                   to set breaker_fielddata value, such as 60%
-  -r, --breaker_request string                     to set breaker_request value, such as 60%
-  -t, --breaker_total string                       to set breaker_total value, such as 60%
-  -a, --cluster_concurrent_rebalanced string       to set cluster_concurrent_rebalanced value, such as 10
-  -h, --help                                       help for apply
-  -b, --max_bytes_per_sec string                   to set indices recovery max_bytes_per_sec, default 40
-  -m, --max_compilations_rate string               to set max_compilations_rate value, such as 75/5m
-  -s, --max_shards_per_node string                 to set max_shards_per_node value, such as 1000
-  -n, --node_concurrent_recoveries string          to set node_concurrent_recoveries value, such as 10
-  -i, --node_initial_primaries_recoveries string   to set node_initial_primaries_recoveries value, such as 10
-  -w, --watermark_high string                      to set watermark_high value, such as 85%
-  -l, --watermark_low string                       to set watermark_low value, such as 90%
+  --allocation_enable string                   to set allocation enable value, primaries or null
+  --breaker_fielddata string                   to set breaker_fielddata value, such as 60%
+  --breaker_request string                     to set breaker_request value, such as 60%
+  --breaker_total string                       to set breaker_total value, such as 60%
+  --cluster_concurrent_rebalanced string       to set cluster_concurrent_rebalanced value, such as 10
+  --help                                       help for apply
+  --max_bytes_per_sec string                   to set indices recovery max_bytes_per_sec, default 40
+  --max_compilations_rate string               to set max_compilations_rate value, such as 75/5m
+  --max_shards_per_node string                 to set max_shards_per_node value, such as 1000
+  --node_concurrent_recoveries string          to set node_concurrent_recoveries value, such as 10
+  --node_initial_primaries_recoveries string   to set node_initial_primaries_recoveries value, such as 10
+  --watermark_high string                      to set watermark_high value, such as 85%
+  --watermark_low string                       to set watermark_low value, such as 90%
 
 Global Flags:
   -c, --cluster string   to specify a es cluster (default "default")

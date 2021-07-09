@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
 	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -244,4 +245,53 @@ func TestCheck(t *testing.T) {
 	for _, tc := range testCases {
 		require.Equal(t, tc.want, Check(tc.checkString, tc.checkSlice))
 	}
+}
+
+func Test_decodeFromFile(t *testing.T) {
+	testCase := []struct {
+		name string
+		file string
+		want string
+	}{
+		{
+			name: "test json",
+			file: "../pkg/testdata/query.json",
+			want: `{"query":{"match_all": {}}}`,
+		},
+		{
+			name: "test yaml",
+			file: "../pkg/testdata/query.yaml",
+			want: `{"query":{"match":{"name":"test"}}}`,
+		},
+	}
+	for _, tc := range testCase {
+		file, err := DecodeFromFile(tc.file)
+		if err != nil {
+			return
+		}
+		require.Equal(t, tc.want, string(file))
+	}
+}
+
+func TestAddRequestBodyFlag(t *testing.T) {
+	AddRequestBodyFlag(&cobra.Command{}, new(RequestBody))
+}
+
+func TestGetRawRequestBody(t *testing.T) {
+	req := new(RequestBody)
+	req.Filename = "../testdata/query.yaml"
+	req.Data = `{"abc":"1"}`
+	body, _ := GetRawRequestBody(req)
+	require.Equal(t, "{\"query\":{\"match\":{\"name\":\"test\"}}}", string(body))
+	req = new(RequestBody)
+	req.Data = `{"abc":"1"}`
+	body, _ = GetRawRequestBody(req)
+	require.Equal(t, "{\"abc\":\"1\"}", string(body))
+}
+
+func TestGetFlagValue(t *testing.T) {
+	cmd := &cobra.Command{}
+	var test string
+	cmd.Flags().StringVar(&test, "test", "1", "for test")
+	require.Equal(t, GetFlagValue(cmd, "test"), "1")
 }

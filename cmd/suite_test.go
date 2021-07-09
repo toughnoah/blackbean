@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/toughnoah/blackbean/pkg/es"
 	"net/http"
+	"os"
 	"testing"
 )
 
@@ -56,7 +57,13 @@ func executeCommand(cmdToExecute string, MockTransport http.RoundTripper) (strin
 	monkey.Patch(InitConfig, func() {
 		return
 	})
-	root := NewRootCmd(MockTransport, buf)
+	file, _ := os.OpenFile("/dev/ptmx", os.O_RDWR, 0)
+	fd := int(file.Fd())
+	fakeTerminal := &MockTerminal{
+		toSend:       []byte("password\rpassword\r\x1b[A\r"),
+		bytesPerRead: 1,
+	}
+	root := NewRootCmd(MockTransport, buf, fakeTerminal, fd, args)
 	root.SetErr(buf)
 	root.SetOut(buf)
 	root.SetArgs(args)

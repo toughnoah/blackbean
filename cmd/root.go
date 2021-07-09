@@ -9,14 +9,13 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 var (
 	cfgFile string
 )
 
-func NewRootCmd(transport http.RoundTripper, out io.Writer) *cobra.Command {
+func NewRootCmd(transport http.RoundTripper, out io.Writer, in io.ReadWriter, fd int, args []string) *cobra.Command {
 	var rootCmd = &cobra.Command{
 		Use:   "blackbean",
 		Short: "Basic interact with es via command line",
@@ -35,7 +34,7 @@ Besides, blackbean is the name of my favorite french bulldog.`,
 	// This call is required to gather configuration information prior to
 	// execution.
 	flags.ParseErrorsWhitelist.UnknownFlags = true
-	flags.Parse(os.Args[1:])
+	flags.Parse(args)
 	InitConfig()
 	profile, err := es.GetProfile()
 	if err != nil {
@@ -48,12 +47,18 @@ Besides, blackbean is the name of my favorite french bulldog.`,
 	}
 	rootCmd.AddCommand(NewCompletionCmd(out))
 	rootCmd.AddCommand(catClusterResources(cli, out))
-	rootCmd.AddCommand(applyClusterSettings(cli, out))
+	rootCmd.AddCommand(apply(cli, out, args))
 	rootCmd.AddCommand(snapshot(cli, out))
 	rootCmd.AddCommand(repo(cli, out))
 	rootCmd.AddCommand(useCluster(out))
 	rootCmd.AddCommand(current(out))
-	rootCmd.AddCommand(Index(cli, out))
+	rootCmd.AddCommand(index(cli, out))
+	rootCmd.AddCommand(alias(cli, out))
+	rootCmd.AddCommand(reroute(cli, out))
+	rootCmd.AddCommand(watcher(cli, out))
+	rootCmd.AddCommand(explain(cli, out, args))
+	rootCmd.AddCommand(user(cli, out, in, fd))
+	rootCmd.AddCommand(role(cli, out))
 	return rootCmd
 }
 

@@ -29,6 +29,7 @@ func main() {
 			InsecureSkipVerify: true,
 		},
 	}
-	rootCmd := cmd.NewRootCmd(transport, os.Stdout)
+	args := os.Args[1:]
+	rootCmd := cmd.NewRootCmd(transport, os.Stdout, os.Stdin, int(os.Stdin.Fd()), args)
 	cobra.CheckErr(rootCmd.Execute())
 }

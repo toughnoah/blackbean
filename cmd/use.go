@@ -26,7 +26,7 @@ func useCluster(out io.Writer) *cobra.Command {
 			return es.CompleteConfigEnv(toComplete), cobra.ShellCompDirectiveNoFileComp
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			m := &Modify{}
+			m := new(Modify)
 			fmt.Fprintf(out, "change to cluster: %s\n\n", args[0])
 			return m.ModifyCurrentCluster(args[0])
 		},

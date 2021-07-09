@@ -12,6 +12,6 @@ func TestCurrent(t *testing.T) {
 	viper.SetConfigType("yaml")
 	err := viper.ReadConfig(r)
 	require.NoError(t, err)
-	_, err = executeCommand("current", nil)
+	_, err = executeCommand("current-es", nil)
 	require.NoError(t, err)
 }

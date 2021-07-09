@@ -8,17 +8,14 @@ import (
 	"github.com/spf13/cobra"
 	"io"
 	"log"
-	"os"
 	"strings"
 )
 
 func snapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	var command = &cobra.Command{
-		Use:               "snapshot [subcommand]",
-		Short:             "snapshot operations ",
-		Long:              "snapshot operations ... wordless",
-		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: noCompletions,
+		Use:   "snapshot [subcommand]",
+		Short: "snapshot operations ",
+		Long:  "snapshot operations ... wordless",
 	}
 	command.AddCommand(restoreSnapshot(cli, out))
 	command.AddCommand(createSnapshot(cli, out))
@@ -28,22 +25,24 @@ func snapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 }
 
 func createSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
-	var so = Snapshot{client: cli}
 	var (
+		so         = Snapshot{client: cli}
 		repository string
+		command    = &cobra.Command{
+			Use:               "create [snapshot]",
+			Short:             "create specific snapshots ",
+			Long:              "create specific snapshots ... wordless",
+			Args:              cobra.ExactArgs(1),
+			ValidArgsFunction: noCompletions,
+			RunE: func(cmd *cobra.Command, args []string) error {
+				res, err := so.createSnapshot(repository, args[0])
+				if err == nil {
+					fmt.Fprintf(out, "%s\n", res)
+				}
+				return err
+			},
+		}
 	)
-	var command = &cobra.Command{
-		Use:               "create [snapshot]",
-		Short:             "create specific snapshots ",
-		Long:              "create specific snapshots ... wordless",
-		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: noCompletions,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			res, err := so.createSnapshot(repository, args[0])
-			fmt.Fprintf(out, "%s\n", res)
-			return err
-		},
-	}
 	f := command.Flags()
 	f.StringVarP(&repository, "repo", "r", "", "to specify repo")
 	err := command.RegisterFlagCompletionFunc("repo", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -57,62 +56,65 @@ func createSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 }
 
 func deleteSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
-	var so = Snapshot{client: cli}
 	var (
+		so         = Snapshot{client: cli}
 		repository string
+		command    = &cobra.Command{
+			Use:   "delete [snapshot]",
+			Short: "delete specific snapshots ",
+			Long:  "delete specific snapshots ... wordless",
+			Args:  cobra.ExactArgs(1),
+			ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				if len(args) != 0 {
+					return nil, cobra.ShellCompDirectiveNoFileComp
+				}
+				return so.getRepoAllSnapshotsForFlag(repository), cobra.ShellCompDirectiveNoFileComp
+			},
+			RunE: func(cmd *cobra.Command, args []string) error {
+				res, err := so.deleteSnapshot(repository, args[0])
+				if err == nil {
+					fmt.Fprintf(out, "%s\n", res)
+				}
+				return err
+			},
+		}
 	)
-	var command = &cobra.Command{
-		Use:   "delete [snapshot]",
-		Short: "delete specific snapshots ",
-		Long:  "delete specific snapshots ... wordless",
-		Args:  cobra.ExactArgs(1),
-		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			if len(args) != 0 {
-				return nil, cobra.ShellCompDirectiveNoFileComp
-			}
-			return so.getRepoAllSnapshotsForFlag(repository), cobra.ShellCompDirectiveNoFileComp
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			res, err := so.deleteSnapshot(repository, args[0])
-			fmt.Fprintf(out, "%s\n", res)
-			return err
-		},
-	}
 	f := command.Flags()
 	f.StringVarP(&repository, "repo", "r", "", "to specify repo")
 	err := command.RegisterFlagCompletionFunc("repo", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return so.getAllRepos(), cobra.ShellCompDirectiveNoFileComp
 	})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%+v\n", err)
-		os.Exit(-1)
+		log.Fatal(err)
 	}
 	_ = command.MarkFlagRequired("repo")
 	return command
 }
 
 func getSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
-	var so = Snapshot{client: cli}
 	var (
+		so         = Snapshot{client: cli}
 		repository string
+		command    = &cobra.Command{
+			Use:   "get [snapshot]",
+			Short: "get specific snapshots ",
+			Long:  "get specific snapshots ... wordless",
+			Args:  cobra.ExactArgs(1),
+			ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				if len(args) != 0 {
+					return nil, cobra.ShellCompDirectiveNoFileComp
+				}
+				return so.getRepoAllSnapshotsForFlag(repository), cobra.ShellCompDirectiveNoFileComp
+			},
+			RunE: func(cmd *cobra.Command, args []string) error {
+				res, err := so.getSnapshot(repository, args[0])
+				if err == nil {
+					fmt.Fprintf(out, "%s\n", res)
+				}
+				return err
+			},
+		}
 	)
-	var command = &cobra.Command{
-		Use:   "get [snapshot]",
-		Short: "get specific snapshots ",
-		Long:  "get specific snapshots ... wordless",
-		Args:  cobra.ExactArgs(1),
-		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			if len(args) != 0 {
-				return nil, cobra.ShellCompDirectiveNoFileComp
-			}
-			return so.getRepoAllSnapshotsForFlag(repository), cobra.ShellCompDirectiveNoFileComp
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			res, err := so.getSnapshot(repository, args[0])
-			fmt.Fprintf(out, "%s\n", res)
-			return err
-		},
-	}
 	f := command.Flags()
 	f.StringVarP(&repository, "repo", "r", "", "to specify repo")
 	err := command.RegisterFlagCompletionFunc("repo", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -126,30 +128,32 @@ func getSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 }
 
 func restoreSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
-	var so = Snapshot{client: cli}
 	var (
+		so                = Snapshot{client: cli}
 		snapshots         string
 		index             string
 		renamePattern     string
 		renameReplacement string
+		command           = &cobra.Command{
+			Use:   "restore [repository]",
+			Short: "get specific index to restore ",
+			Long:  "get specific index to restore ...wordless",
+			Args:  cobra.ExactArgs(1),
+			ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				if len(args) != 0 {
+					return nil, cobra.ShellCompDirectiveNoFileComp
+				}
+				return so.getAllRepos(), cobra.ShellCompDirectiveNoFileComp
+			},
+			RunE: func(cmd *cobra.Command, args []string) error {
+				res, err := so.recoverIndices(args[0], snapshots, index, renamePattern, renameReplacement)
+				if err == nil {
+					fmt.Fprintf(out, "%s\n", res)
+				}
+				return err
+			},
+		}
 	)
-	var command = &cobra.Command{
-		Use:   "restore [repository]",
-		Short: "get specific index to restore ",
-		Long:  "get specific index to restore ...wordless",
-		Args:  cobra.ExactArgs(1),
-		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			if len(args) != 0 {
-				return nil, cobra.ShellCompDirectiveNoFileComp
-			}
-			return so.getAllRepos(), cobra.ShellCompDirectiveNoFileComp
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			res, err := so.recoverIndices(args[0], snapshots, index, renamePattern, renameReplacement)
-			fmt.Fprintf(out, "%s\n", res)
-			return err
-		},
-	}
 	f := command.Flags()
 	f.StringVarP(&snapshots, "snapshot", "s", "_all", "to get specific snapshot")
 	err := command.RegisterFlagCompletionFunc("snapshot", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -210,18 +214,15 @@ func (S *Snapshot) recoverIndices(repo, snapshot, index, renamePattern, renameRe
 }
 
 func (S *Snapshot) createSnapshot(repo, snapshot string) (res *esapi.Response, err error) {
-	res, err = S.client.Snapshot.Create(repo, snapshot)
-	return res, err
+	return S.client.Snapshot.Create(repo, snapshot)
 }
 
 func (S *Snapshot) deleteSnapshot(repo, snapshot string) (res *esapi.Response, err error) {
-	res, err = S.client.Snapshot.Delete(repo, snapshot)
-	return
+	return S.client.Snapshot.Delete(repo, snapshot)
 }
 
 func (S *Snapshot) getSnapshot(repo, snapshot string) (res *esapi.Response, err error) {
-	res, err = S.client.Snapshot.Get(repo, splitWords(snapshot), S.client.Snapshot.Get.WithPretty())
-	return
+	return S.client.Snapshot.Get(repo, splitWords(snapshot), S.client.Snapshot.Get.WithPretty())
 }
 
 func splitWords(words string) []string {

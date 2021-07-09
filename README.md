@@ -5,6 +5,7 @@
 # blackbean
 The blackbean is a command tool for elasticsearch operations by using cobra. Besides, blackbean is the name of my lovely French bulldog.
 ![image](https://github.com/toughnoah/blackbean/blob/45d1aca63307d79b9b3a56028494219bf5ba25b2/img/blackbean.png)
+
 <!-- vscode-markdown-toc -->
 * 1. [Configuration](#Configuration)
 * 2. [Shell completion](#Shellcompletion)
@@ -61,7 +62,7 @@ allocations   cachemem      health        largeindices  nodes         segmem    
 ```
 
 ##  3. <a name='CommonFlag'></a>Common Flag
-You can use `-d` or `--data` to specify raw request body like `'{"query":"match_all":{}"}'`.
+You can use `-d` or `--data` to specify raw request body like `'{"query":"match_all":{}}'`.
 Also, you can directly read from file using `-f` or `--filename`. Both json and yaml are supported.
 ```console
 [root@noah ~]# blackbean index search test-* --

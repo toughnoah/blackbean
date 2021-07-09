@@ -4,7 +4,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/toughnoah/blackbean)](https://goreportcard.com/report/github.com/toughnoah/blackbean)
 # blackbean
 The blackbean is a command tool for elasticsearch operations by using cobra. Besides, blackbean is the name of my lovely French bulldog.
-s
 ![image](https://github.com/toughnoah/blackbean/blob/45d1aca63307d79b9b3a56028494219bf5ba25b2/img/blackbean.png)
 ## Configuration
 Define your config file firstly, and specify `current` as one of your cluster.

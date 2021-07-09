@@ -78,7 +78,7 @@ func TestCompletion2(t *testing.T) {
 			},
 		},
 		{
-			cmd:      "__complete repo get test -s ''",
+			cmd:      "__complete repo get test --snapshot ''",
 			checkOut: "snapshot01\nsnapshot01\n",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"snapshots":[{"snapshot":"snapshot01"}, {"snapshot":"snapshot01"}]}`,
@@ -92,28 +92,28 @@ func TestCompletion2(t *testing.T) {
 			},
 		},
 		{
-			cmd:      "__complete snapshot get -r ''",
+			cmd:      "__complete snapshot get --repo ''",
 			checkOut: "repoA",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"repoA":"a","repoB":"b"}`,
 			},
 		},
 		{
-			cmd:      "__complete snapshot get -r repoA ''",
+			cmd:      "__complete snapshot get --repo repoA ''",
 			checkOut: "snapshot01\nsnapshot01\n",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"snapshots":[{"snapshot":"snapshot01"}, {"snapshot":"snapshot01"}]}`,
 			},
 		},
 		{
-			cmd:      "__complete snapshot delete -r repoA ''",
+			cmd:      "__complete snapshot delete --repo repoA ''",
 			checkOut: "snapshot01",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"snapshots":[{"snapshot":"snapshot01"}, {"snapshot":"snapshot01"}]}`,
 			},
 		},
 		{
-			cmd:      "__complete snapshot delete -r ''",
+			cmd:      "__complete snapshot delete --repo ''",
 			checkOut: "repoA",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"repoA":"a","repoB":"b"}`,

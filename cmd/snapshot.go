@@ -155,7 +155,7 @@ func restoreSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 		}
 	)
 	f := command.Flags()
-	f.StringVarP(&snapshots, "snapshot", "s", "_all", "to get specific snapshot")
+	f.StringVar(&snapshots, "snapshot", "_all", "to get specific snapshot")
 	err := command.RegisterFlagCompletionFunc("snapshot", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		if len(args) == 1 {
 			return so.getRepoAllSnapshotsForFlag(args[0]), cobra.ShellCompDirectiveNoFileComp
@@ -165,9 +165,9 @@ func restoreSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	if err != nil {
 		log.Fatal(err)
 	}
-	f.StringVarP(&index, "index", "i", "", "to get specific index to restore")
-	f.StringVarP(&renamePattern, "rename_pattern", "p", "", "to specify rename_pattern")
-	f.StringVarP(&renameReplacement, "rename_replacement", "r", "", "to specify rename_replacement")
+	f.StringVar(&index, "index", "", "to get specific index to restore")
+	f.StringVar(&renamePattern, "rename_pattern", "", "to specify rename_pattern")
+	f.StringVar(&renameReplacement, "rename_replacement", "", "to specify rename_replacement")
 	_ = command.MarkFlagRequired("index")
 	_ = command.MarkFlagRequired("rename_pattern")
 	_ = command.MarkFlagRequired("rename_replacement")

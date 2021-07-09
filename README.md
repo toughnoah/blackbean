@@ -4,9 +4,32 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/toughnoah/blackbean)](https://goreportcard.com/report/github.com/toughnoah/blackbean)
 # blackbean
 The blackbean is a command tool for elasticsearch operations by using cobra. Besides, blackbean is the name of my lovely French bulldog.
-
 ![image](https://github.com/toughnoah/blackbean/blob/45d1aca63307d79b9b3a56028494219bf5ba25b2/img/blackbean.png)
-## Configuration
+<!-- vscode-markdown-toc -->
+* 1. [Configuration](#Configuration)
+* 2. [Shell completion](#Shellcompletion)
+* 3. [Common Flag](#CommonFlag)
+* 4. [Command](#Command)
+    * 4.1. [Use](#Use)
+    * 4.2. [Cat](#Cat)
+    * 4.3. [Apply](#Apply)
+    * 4.4. [Repo](#Repo)
+    * 4.5. [Snapshot](#Snapshot)
+    * 4.6. [Index](#Index)
+    * 4.7. [Alias](#Alias)
+    * 4.8. [Reroute](#Reroute)
+    * 4.9. [User](#User)
+    * 4.10. [Role](#Role)
+    * 4.11. [Explain](#Explain)
+    * 4.12. [Watcher](#Watcher)
+* 5. [Contact Me](#ContactMe)
+
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+##  1. <a name='Configuration'></a>Configuration
 Define your config file firstly, and specify `current` as one of your cluster.
 ```
 cluster:
@@ -21,7 +44,7 @@ cluster:
 current: default
 ```
 
-## Shell completion
+##  2. <a name='Shellcompletion'></a>Shell completion
 All commands have fulfilled necessary completion, including flags. Enjoy yourself with blackbean!
 ```console
 [root@noah ~]# echo "source <(blackbean completion bash)" >> ~/.bashrc
@@ -37,7 +60,7 @@ apply       completion  explain     index       reroute     snapshot    user
 allocations   cachemem      health        largeindices  nodes         segmem        threadpoo
 ```
 
-## Common Flag
+##  3. <a name='CommonFlag'></a>Common Flag
 You can use `-d` or `--data` to specify raw request body like `'{"query":"match_all":{}"}'`.
 Also, you can directly read from file using `-f` or `--filename`. Both json and yaml are supported.
 ```console
@@ -51,7 +74,7 @@ Also, you can directly read from file using `-f` or `--filename`. Both json and 
 "match_all": {}}}
 
 ```
-## Command
+##  4. <a name='Command'></a>Command
 ```console
 [root@noah ~]# blackbean
 blackbean command provides a set of commands to talk with es via cli.
@@ -84,7 +107,7 @@ Flags:
 
 Use "blackbean [command] --help" for more information about a command.
 ```
-### Use
+###  4.1. <a name='Use'></a>Use
 ```console
 [root@noah ~]# blackbean current-es
 current using cluster: qa
@@ -96,14 +119,14 @@ prod  qa
 change to cluster: qa
 
 ```
-### Cat
+###  4.2. <a name='Cat'></a>Cat
 ```console
 [root@noah ~]# blackbean cat health 
 [200 OK] epoch      timestamp cluster       status node.total node.data shards  pri relo init unassign pending_tasks max_task_wait_time active_shards_percent
 1624371902 14:25:02  black-cluster green          12         9   9304 4652    0    0        0             0                  -                100.0%
 ```
 
-### Apply
+###  4.3. <a name='Apply'></a>Apply
 ```console
 [root@noah ~]# blackbean apply settings -e
 null       primaries
@@ -154,7 +177,7 @@ Global Flags:
   -c, --cluster string   to specify a es cluster (default "default")
       --config string    config file (default is $HOME/.blackbean.yaml)
 ```
-### Repo
+###  4.4. <a name='Repo'></a>Repo
 ```console
 [root@noah ~]# blackbean repo
 repo operations ... wordless
@@ -175,7 +198,7 @@ Global Flags:
 
 Use "blackbean repo [command] --help" for more information about a command.
 ```
-### Snapshot
+###  4.5. <a name='Snapshot'></a>Snapshot
 ```console
 [root@noah ~]# blackbean snapshot
 snapshot operations ... wordless
@@ -198,7 +221,7 @@ Global Flags:
 Use "blackbean snapshot [command] --help" for more information about a command.
 ```
 
-### Index
+###  4.6. <a name='Index'></a>Index
 ```console
 [root@noah ~]# blackbean index
 index operations ... wordless
@@ -244,7 +267,7 @@ Available Commands:
     ...
 ```
 
-### Alias
+###  4.7. <a name='Alias'></a>Alias
 ```console
 [root@noah ~]# blackbean alias
 alias index ... wordless
@@ -260,7 +283,7 @@ Available Commands:
 ...
 ```
 
-### Reroute
+###  4.8. <a name='Reroute'></a>Reroute
 ```console
 [root@noah ~]# blackbean reroute
 reroute for cluster ... wordless
@@ -276,7 +299,7 @@ Available Commands:
 ...
 ```
 
-### User
+###  4.9. <a name='User'></a>User
 
 ```console
 [root@noah ~]# blackbean user
@@ -293,7 +316,7 @@ Available Commands:
 ...
 ```
 
-### Role
+###  4.10. <a name='Role'></a>Role
 ```console
 [root@noah ~]# blackbean role
 role operations for cluster ... wordless
@@ -310,7 +333,7 @@ Available Commands:
 
 
 ```
-### Explain
+###  4.11. <a name='Explain'></a>Explain
 ```console
 [root@noah ~]# blackbean explain -h
 explain index allocation ... wordless
@@ -326,7 +349,7 @@ Flags:
 ...
 ```
 
-### Watcher
+###  4.12. <a name='Watcher'></a>Watcher
 ```console
 [root@noah ~]# blackbean watcher
 operate watcherr ... wordless
@@ -342,5 +365,5 @@ Available Commands:
 ```
 
 
-## Contact Me
+##  5. <a name='ContactMe'></a>Contact Me
 Any advice is welcome! Please email to toughnoah@163.com

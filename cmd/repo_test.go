@@ -15,14 +15,14 @@ func TestGetRepo(t *testing.T) {
 	}{
 		{
 			name: "get repo",
-			cmd:  "repo get test -s test",
+			cmd:  "repo get test --snapshot test",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"test":"get repo"}`,
 			},
 		},
 		{
 			name: "create repo",
-			cmd:  "repo create test -e azure -c test -p /abc",
+			cmd:  "repo create test --type azure --container test --path /abc",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"test":"create repo"}`,
 			},

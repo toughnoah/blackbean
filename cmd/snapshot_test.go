@@ -110,21 +110,21 @@ func TestSnapshotCommand(t *testing.T) {
 	}{
 		{
 			name: "test get cmd",
-			cmd:  "snapshot get snapshot01 -r repo",
+			cmd:  "snapshot get snapshot01 --repo repo",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"test":" test get"}`,
 			},
 		},
 		{
 			name: "test create cmd",
-			cmd:  "snapshot create snapshot01 -r repo",
+			cmd:  "snapshot create snapshot01 --repo repo",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"acknowledge":"true"}`,
 			},
 		},
 		{
 			name: "test delete cmd",
-			cmd:  "snapshot delete snapshot01 -r repo",
+			cmd:  "snapshot delete snapshot01 --repo repo",
 			mock: &fake.MockEsResponse{
 				ResponseString: `{"acknowledge":"true"}`,
 			},

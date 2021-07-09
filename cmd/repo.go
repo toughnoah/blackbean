@@ -48,7 +48,7 @@ func getRepos(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 		}
 	)
 	f := command.Flags()
-	f.StringVarP(&snapshots, "snapshot", "s", "_all", "to get specific snapshot")
+	f.StringVar(&snapshots, "snapshot", "_all", "to get specific snapshot")
 	err := command.RegisterFlagCompletionFunc("snapshot", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		if len(args) == 1 {
 			return so.getRepoAllSnapshotsForFlag(args[0]), cobra.ShellCompDirectiveNoFileComp
@@ -84,9 +84,9 @@ func createRepo(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 		}
 	)
 	f := command.Flags()
-	f.StringVarP(&containType, "type", "e", "", "to specify repo type")
-	f.StringVarP(&container, "container", "c", "", "to specify repo container")
-	f.StringVarP(&path, "path", "p", "", "to specify repo path")
+	f.StringVar(&containType, "type", "", "to specify repo type")
+	f.StringVar(&container, "container", "", "to specify repo container")
+	f.StringVar(&path, "path", "", "to specify repo path")
 	_ = command.MarkFlagRequired("type")
 	_ = command.MarkFlagRequired("container")
 	_ = command.MarkFlagRequired("path")

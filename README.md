@@ -36,7 +36,7 @@ The blackbean is a command tool for elasticsearch operations by using cobra. Bes
 <!-- /vscode-markdown-toc -->
 ##  1. <a name='Starttoenjoyblackbean'></a>Start to enjoy blackbean
 ```
-curl -LO https://github.com/toughnoah/blackbean/releases/download/v1.0.1/blackbean
+curl -LO https://github.com/toughnoah/blackbean/releases/download/v1.0.2/blackbean
 chmod +x ./blackbean
 mv ./blackbean /usr/local/bin
 ```

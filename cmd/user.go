@@ -62,7 +62,7 @@ func getUser(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 					res, err = u.getUser(args[0])
 				}
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -89,7 +89,7 @@ func createUser(cli *elasticsearch.Client, out io.Writer, in io.ReadWriter, fd i
 				u.Username = args[0]
 				res, err := u.createUser(req)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -130,7 +130,7 @@ func updateUser(cli *elasticsearch.Client, out io.Writer, in io.ReadWriter, fd i
 				u.Username = args[0]
 				res, err := u.updateUser(req)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -163,7 +163,7 @@ func deleteUser(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := u.deleteUser(args[0])
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},

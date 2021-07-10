@@ -42,7 +42,7 @@ func createAlias(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := a.createAlias(args[0], args[1], req)
-				fmt.Fprintf(out, "%s\n", res)
+				fmt.Fprintln(out, res)
 				return err
 			},
 		}
@@ -60,6 +60,7 @@ func getAlias(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			Use:   "get [index/alias]",
 			Short: "get alias for index or get alias list",
 			Long:  "get alias for index or get alias list",
+			Args:  cobra.ExactArgs(1),
 			ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 				if len(args) != 0 {
 					return nil, cobra.ShellCompDirectiveNoFileComp
@@ -70,7 +71,7 @@ func getAlias(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := a.getAlias(args[0], isAlias)
-				fmt.Fprintf(out, "%s\n", res)
+				fmt.Fprintln(out, res)
 				return err
 			},
 		}
@@ -97,7 +98,7 @@ func deleteAlias(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := a.deleteAlias(args[0], args[1])
-				fmt.Fprintf(out, "%s\n", res)
+				fmt.Fprintln(out, res)
 				return err
 			},
 		}
@@ -112,6 +113,7 @@ type Alias struct {
 func (a *Alias) createAlias(indices, alias string, req *es.RequestBody) (res *esapi.Response, err error) {
 	body, err := es.GetRawRequestBody(req)
 	if err != nil {
+		log.Println("failed to get raw request body")
 		return nil, err
 	}
 	return a.client.Indices.PutAlias(splitWords(indices), alias, a.client.Indices.PutAlias.WithBody(bytes.NewReader(body)))

@@ -37,7 +37,7 @@ func createSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := so.createSnapshot(repository, args[0])
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -73,7 +73,7 @@ func deleteSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := so.deleteSnapshot(repository, args[0])
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -109,7 +109,7 @@ func getSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := so.getSnapshot(repository, args[0])
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -148,7 +148,7 @@ func restoreSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := so.recoverIndices(args[0], snapshots, index, renamePattern, renameReplacement)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},

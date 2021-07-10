@@ -25,7 +25,7 @@ func catClusterResources(cli *elasticsearch.Client, out io.Writer) *cobra.Comman
 		RunE: func(cmd *cobra.Command, args []string) error {
 			res, err := catResources(args[0], cli)
 			if err == nil {
-				fmt.Fprintf(out, "%s\n", res)
+				fmt.Fprintln(out, res)
 			}
 			return err
 		},

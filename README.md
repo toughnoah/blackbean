@@ -25,7 +25,8 @@ The blackbean is a command tool for elasticsearch operations by using cobra. Bes
 	* 5.10. [User](#User)
 	* 5.11. [Role](#Role)
 	* 5.12. [Explain](#Explain)
-	* 5.13. [Watcher](#Watcher)
+	* 5.13. [Template](#Template)
+	* 5.14. [Watcher](#Watcher)
 * 6. [Contact Me](#ContactMe)
 
 <!-- vscode-markdown-toc-config
@@ -243,14 +244,29 @@ Usage:
   blackbean index [command]
 
 Available Commands:
+  bulk        send bulk request
   create      create index from command
   delete      delete index from command
   get         get index from cluster
+  msearch     send msearch request
   reindex     do reindex
   search      search index from cluster
-
+  write       write index from command
 ...
+```
+```console
+[root@noah ~]# blackbean index msearch -h
+send msearch request ... wordless
 
+Usage:
+  blackbean index msearch [flags]
+
+Flags:
+  -d, --data string                         the path to raw file with request body (default "{}")
+  -h, --help                                help for msearch
+      --max_concurrent_searches int         ID of the pipeline to use to preprocess incoming documents.
+      --max_concurrent_shard_requests int   if true, the request’s actions must target an index alias.
+      --raw_file string                     the path to raw file with request body
 ```
 ```console
 [root@noah ~]# blackbean index search test-* -f query.json
@@ -362,7 +378,22 @@ Flags:
 ...
 ```
 
-###  5.13. <a name='Watcher'></a>Watcher
+###  5.13. <a name='Template'></a>Template
+```console
+[root@noah ~]# blackbean template
+template operations ... wordless
+
+Usage:
+  blackbean template [command]
+
+Available Commands:
+  apply       create or update template
+  delete      delete or update template
+  get         get template
+...
+```
+
+###  5.14. <a name='Watcher'></a>Watcher
 ```console
 [root@noah ~]# blackbean watcher
 operate watcherr ... wordless

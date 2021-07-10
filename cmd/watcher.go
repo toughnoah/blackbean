@@ -36,7 +36,7 @@ func watcherStart(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := w.start()
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return nil
 			},
@@ -57,7 +57,7 @@ func watcherStop(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := w.stop()
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -77,7 +77,7 @@ func watcherStats(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := w.stats()
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},

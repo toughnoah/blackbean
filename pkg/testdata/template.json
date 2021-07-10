@@ -1,0 +1,200 @@
+{
+  "index_patterns" : [
+    "zipkin-*"
+  ],
+  "settings" : {
+    "index" : {
+      "lifecycle" : {
+        "name" : "zipkin-ilm-policy"
+      },
+      "number_of_shards" : "5",
+      "number_of_replicas" : "1"
+    }
+  },
+  "mappings" : {
+    "properties" : {
+      "kubernetes" : {
+        "properties" : {
+          "container_image_id" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          },
+          "container_name" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          },
+          "namespace_id" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          },
+          "host" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          },
+          "master_url" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          },
+          "pod_id" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          },
+          "namespace_labels" : {
+            "properties" : {
+              "ns" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "ignore_above" : 256,
+                    "type" : "keyword"
+                  }
+                }
+              },
+              "class" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "ignore_above" : 256,
+                    "type" : "keyword"
+                  }
+                }
+              }
+            }
+          },
+          "container_image" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          },
+          "labels" : {
+            "properties" : {
+              "app" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "ignore_above" : 256,
+                    "type" : "keyword"
+                  }
+                }
+              },
+              "pod-template-hash" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "ignore_above" : 256,
+                    "type" : "keyword"
+                  }
+                }
+              }
+            }
+          },
+          "namespace_name" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          },
+          "pod_name" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          }
+        }
+      },
+      "@timestamp" : {
+        "type" : "date"
+      },
+      "stream" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "ignore_above" : 256,
+            "type" : "keyword"
+          }
+        }
+      },
+      "@version" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "ignore_above" : 256,
+            "type" : "keyword"
+          }
+        }
+      },
+      "message" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "ignore_above" : 256,
+            "type" : "keyword"
+          }
+        }
+      },
+      "docker" : {
+        "properties" : {
+          "container_id" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "ignore_above" : 256,
+                "type" : "keyword"
+              }
+            }
+          }
+        }
+      },
+      "tags" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "ignore_above" : 256,
+            "type" : "keyword"
+          }
+        }
+      }
+    }
+  },
+  "aliases" : {}
+}

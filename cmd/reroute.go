@@ -18,7 +18,7 @@ const (
 	CancelOps           = "cancel"
 )
 
-func reroute(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
+func reroute(cli *elasticsearch.Client, out io.Writer, osArgs []string) *cobra.Command {
 	var (
 		command = &cobra.Command{
 			Use:               "reroute [subcommand]",
@@ -28,14 +28,14 @@ func reroute(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			ValidArgsFunction: noCompletions,
 		}
 	)
-	command.AddCommand(rerouteMoveIndex(cli, out))
-	command.AddCommand(cancel(cli, out))
-	command.AddCommand(rerouteAllocateReplicas(cli, out))
+	command.AddCommand(rerouteMoveIndex(cli, out, osArgs))
+	command.AddCommand(cancel(cli, out, osArgs))
+	command.AddCommand(rerouteAllocateReplicas(cli, out, osArgs))
 	command.AddCommand(failed(cli, out))
 	return command
 }
 
-func rerouteMoveIndex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
+func rerouteMoveIndex(cli *elasticsearch.Client, out io.Writer, osArgs []string) *cobra.Command {
 	var (
 		shard    string
 		fromNode string
@@ -57,7 +57,7 @@ func rerouteMoveIndex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := r.move(args[0], shard, fromNode, toNode, req)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -83,14 +83,17 @@ func rerouteMoveIndex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	}); err != nil {
 		log.Fatal(err)
 	}
-	_ = command.MarkFlagRequired("shard")
-	_ = command.MarkFlagRequired("from_node")
-	_ = command.MarkFlagRequired("to_node")
-	es.AddRequestBodyFlag(command, req)
+	f = es.AddRequestBodyFlag(command, req)
+	f.Parse(osArgs)
+	if es.NoRawRequestBodySet(command) {
+		_ = command.MarkFlagRequired("shard")
+		_ = command.MarkFlagRequired("from_node")
+		_ = command.MarkFlagRequired("to_node")
+	}
 	return command
 }
 
-func rerouteAllocateReplicas(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
+func rerouteAllocateReplicas(cli *elasticsearch.Client, out io.Writer, osArgs []string) *cobra.Command {
 	var (
 		shard   string
 		node    string
@@ -111,7 +114,7 @@ func rerouteAllocateReplicas(cli *elasticsearch.Client, out io.Writer) *cobra.Co
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := r.allocateReplicaOrCancel(AllocateReplicasOps, args[0], shard, node, req)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -128,12 +131,16 @@ func rerouteAllocateReplicas(cli *elasticsearch.Client, out io.Writer) *cobra.Co
 	}); err != nil {
 		log.Fatal(err)
 	}
-	_ = command.MarkFlagRequired("shard")
-	_ = command.MarkFlagRequired("node")
+	f = es.AddRequestBodyFlag(command, req)
+	f.Parse(osArgs)
+	if es.NoRawRequestBodySet(command) {
+		_ = command.MarkFlagRequired("shard")
+		_ = command.MarkFlagRequired("node")
+	}
 	return command
 }
 
-func cancel(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
+func cancel(cli *elasticsearch.Client, out io.Writer, osArgs []string) *cobra.Command {
 	var (
 		shard   string
 		node    string
@@ -154,7 +161,7 @@ func cancel(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := r.allocateReplicaOrCancel(CancelOps, args[0], shard, node, req)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -171,8 +178,12 @@ func cancel(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	}); err != nil {
 		log.Fatal(err)
 	}
-	_ = command.MarkFlagRequired("shard")
-	_ = command.MarkFlagRequired("node")
+	f = es.AddRequestBodyFlag(command, req)
+	f.Parse(osArgs)
+	if es.NoRawRequestBodySet(command) {
+		_ = command.MarkFlagRequired("shard")
+		_ = command.MarkFlagRequired("node")
+	}
 	return command
 }
 
@@ -188,7 +199,7 @@ func failed(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := r.retryFailed()
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -223,7 +234,6 @@ func (o *rerouteObject) allocateReplicaOrCancel(ops, index, shard, node string, 
 		return o.Client.Cluster.Reroute(o.Client.Cluster.Reroute.WithBody(bytes.NewReader(rawBody)))
 	}
 	body := fmt.Sprintf(`{"commands": [{ "%s": {"index": "%s", "shard": %s,"node": "%s"}}]}`, ops, index, shard, node)
-	fmt.Println(body)
 	return o.Client.Cluster.Reroute(o.Client.Cluster.Reroute.WithBody(strings.NewReader(body)))
 }
 

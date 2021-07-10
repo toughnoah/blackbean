@@ -20,6 +20,8 @@ func TestReplicaAllocateReroute(t *testing.T) {
 	}
 	_, err := executeCommand("reroute allocateReplicas test-* --shard=0 --node=A", mock)
 	require.NoError(t, err)
+	_, err = executeCommand("reroute cancel test-* -f ../pkg/testdata/reroute.json", mock)
+	require.NoError(t, err)
 }
 func TestMoveReroute(t *testing.T) {
 	mock := &fake.MockEsResponse{

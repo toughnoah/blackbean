@@ -31,7 +31,7 @@ func explain(cli *elasticsearch.Client, out io.Writer, args []string) *cobra.Com
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := e.allocationExplain(args, shard, node, primary)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},

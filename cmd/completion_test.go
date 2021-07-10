@@ -238,6 +238,30 @@ func TestCompletion2(t *testing.T) {
 				ResponseString: `{"nodes":{"A": {"name":"elasticsearch-master-0"}}}`,
 			},
 		},
+		{
+			name:     "test template completion",
+			cmd:      "__complete template get ''",
+			checkOut: "A",
+			mock: &fake.MockEsResponse{
+				ResponseString: `{"A":{}}`,
+			},
+		},
+		{
+			name:     "test template completion",
+			cmd:      "__complete template delete ''",
+			checkOut: "A",
+			mock: &fake.MockEsResponse{
+				ResponseString: `{"A":{}}`,
+			},
+		},
+		{
+			name:     "test template completion",
+			cmd:      "__complete template apply ''",
+			checkOut: "A",
+			mock: &fake.MockEsResponse{
+				ResponseString: `{"A":{}}`,
+			},
+		},
 	}
 	for _, tc := range testCases {
 		out, err := executeCommand(tc.cmd, tc.mock)

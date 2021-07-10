@@ -54,11 +54,12 @@ Besides, blackbean is the name of my favorite french bulldog.`,
 	rootCmd.AddCommand(current(out))
 	rootCmd.AddCommand(index(cli, out))
 	rootCmd.AddCommand(alias(cli, out))
-	rootCmd.AddCommand(reroute(cli, out))
+	rootCmd.AddCommand(reroute(cli, out, args))
 	rootCmd.AddCommand(watcher(cli, out))
 	rootCmd.AddCommand(explain(cli, out, args))
 	rootCmd.AddCommand(user(cli, out, in, fd))
 	rootCmd.AddCommand(role(cli, out))
+	rootCmd.AddCommand(template(cli, out))
 	return rootCmd
 }
 

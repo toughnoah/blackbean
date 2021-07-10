@@ -61,7 +61,7 @@ func getRole(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 					res, err = r.getRoles(args[0])
 				}
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -91,7 +91,7 @@ func createRole(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 				r.Role = args[0]
 				res, err := r.createRole(req)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -155,7 +155,7 @@ func updateRole(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 				r.Role = args[0]
 				res, err := r.updateRole(req)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},

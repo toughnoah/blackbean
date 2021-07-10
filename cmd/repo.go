@@ -41,7 +41,7 @@ func getRepos(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := so.getRepoAllSnapshots(args[0], snapshots)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -77,7 +77,7 @@ func createRepo(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := so.createSnapshotRepo(containType, container, path, args[0])
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -110,7 +110,7 @@ func deleteRepo(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := so.deleteSnapshotRepo(args[0])
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},

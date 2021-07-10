@@ -6,6 +6,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"github.com/toughnoah/blackbean/pkg/util"
 	"golang.org/x/text/encoding/unicode"
@@ -122,10 +123,11 @@ type RequestBody struct {
 	Data     string
 }
 
-func AddRequestBodyFlag(cmd *cobra.Command, body *RequestBody) {
+func AddRequestBodyFlag(cmd *cobra.Command, body *RequestBody) *pflag.FlagSet {
 	f := cmd.Flags()
 	f.StringVarP(&body.Filename, "filename", "f", "", "get request body from specific file.")
 	f.StringVarP(&body.Data, "data", "d", "{}", "specify request body")
+	return f
 }
 
 func GetRawRequestBody(req *RequestBody) (raw []byte, err error) {
@@ -142,4 +144,12 @@ func GetRawRequestBody(req *RequestBody) (raw []byte, err error) {
 
 func GetFlagValue(cmd *cobra.Command, flag string) string {
 	return cmd.Flags().Lookup(flag).Value.String()
+}
+
+func NoRawRequestBodySet(cmd *cobra.Command) bool {
+	return GetFlagValue(cmd, "filename") == EmptyFile && GetFlagValue(cmd, "data") == EmptyData
+}
+
+func NoRawRequestFlagError() error {
+	return errors.New("required one of flag(s) \"filename\", \"data\", not set")
 }

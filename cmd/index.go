@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/toughnoah/blackbean/pkg/es"
 	"io"
+	"io/ioutil"
 	"log"
+	"strings"
 )
 
 func index(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
@@ -24,6 +27,9 @@ func index(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	command.AddCommand(createIndex(cli, out))
 	command.AddCommand(deleteIndex(cli, out))
 	command.AddCommand(reindex(cli, out))
+	command.AddCommand(writeIndex(cli, out))
+	command.AddCommand(bulk(cli, out))
+	command.AddCommand(mSearch(cli, out))
 	return command
 }
 
@@ -42,7 +48,7 @@ func getIndex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			res, err := i.getIndices(args[0])
 			if err == nil {
-				fmt.Fprintf(out, "%s\n", res)
+				fmt.Fprintln(out, res)
 			}
 			return err
 		},
@@ -66,7 +72,7 @@ func searchIndex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			res, err := i.searchIndex(args[0], req)
 			if err == nil {
-				fmt.Fprintf(out, "%s\n", res)
+				fmt.Fprintln(out, res)
 			}
 			return err
 		},
@@ -86,7 +92,7 @@ func createIndex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			res, err := i.createIndex(args[0], req)
 			if err == nil {
-				fmt.Fprintf(out, "%s\n", res)
+				fmt.Fprintln(out, res)
 			}
 			return err
 		},
@@ -110,7 +116,7 @@ func deleteIndex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			res, err := i.deleteIndices(args[0])
 			if err == nil {
-				fmt.Fprintf(out, "%s\n", res)
+				fmt.Fprintln(out, res)
 			}
 			return err
 		},
@@ -133,7 +139,7 @@ func reindex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				res, err := i.reIndex(args[0], args[1], req)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -143,8 +149,125 @@ func reindex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	return command
 }
 
+func writeIndex(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
+	req := new(es.RequestBody)
+	i := Indices{client: cli}
+	var command = &cobra.Command{
+		Use:   "write [index]",
+		Short: "write index from command",
+		Long:  "write index from command ... wordless",
+		Args:  cobra.ExactArgs(1),
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			if len(args) != 0 {
+				return nil, cobra.ShellCompDirectiveNoFileComp
+			}
+			return i.getAllIndices(), cobra.ShellCompDirectiveNoFileComp
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if es.NoRawRequestBodySet(cmd) {
+				return es.NoRawRequestFlagError()
+			}
+			res, err := i.writeIndex(args[0], req)
+			if err == nil {
+				fmt.Fprintln(out, res)
+			}
+			return err
+		},
+	}
+	es.AddRequestBodyFlag(command, req)
+	return command
+}
+
+func bulk(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
+	var (
+		i            = Indices{client: cli}
+		requireAlias bool
+		pipeline     string
+		rawFile      string
+		data         string
+		command      = &cobra.Command{
+			Use:   "bulk",
+			Short: "send bulk request",
+			Long:  "send bulk request ... wordless",
+			Args:  cobra.MaximumNArgs(1),
+			ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				if len(args) != 0 {
+					return nil, cobra.ShellCompDirectiveNoFileComp
+				}
+				return i.getAllIndices(), cobra.ShellCompDirectiveNoFileComp
+			},
+			RunE: func(cmd *cobra.Command, args []string) error {
+				i.rawFile = rawFile
+				fmt.Println(i.rawFile)
+				if len(args) != 0 {
+					i.index = args[0]
+				}
+				if es.GetFlagValue(cmd, "data") == es.EmptyData && es.GetFlagValue(cmd, "raw_file") == es.EmptyFile {
+					return errors.New("one of --data and --raw_file should be specified")
+				}
+				res, err := i.bulk(requireAlias, pipeline)
+				if err == nil {
+					fmt.Fprintln(out, res)
+				}
+				return err
+			},
+		}
+	)
+	f := command.Flags()
+	f.StringVar(&pipeline, "pipeline", "", "ID of the pipeline to use to preprocess incoming documents.")
+	f.BoolVar(&requireAlias, "require_alias", false, "if true, the request’s actions must target an index alias.")
+	f.StringVar(&rawFile, "raw_file", es.EmptyFile, "the path to raw file with request body")
+	f.StringVarP(&data, "data", "d", es.EmptyData, "the path to raw file with request body")
+	return command
+}
+
+func mSearch(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
+	var (
+		i                          = Indices{client: cli}
+		maxConcurrentSearches      int
+		maxConcurrentShardRequests int
+		rawFile                    string
+		data                       string
+		command                    = &cobra.Command{
+			Use:   "msearch",
+			Short: "send msearch request",
+			Long:  "send msearch request ... wordless",
+			Args:  cobra.MaximumNArgs(1),
+			ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				if len(args) != 0 {
+					return nil, cobra.ShellCompDirectiveNoFileComp
+				}
+				return i.getAllIndices(), cobra.ShellCompDirectiveNoFileComp
+			},
+			RunE: func(cmd *cobra.Command, args []string) error {
+				i.rawFile = rawFile
+				if len(args) != 0 {
+					i.index = args[0]
+				}
+				if es.GetFlagValue(cmd, "data") == es.EmptyData && es.GetFlagValue(cmd, "raw_file") == es.EmptyFile {
+					return errors.New("one of --data and --raw_file should be specified")
+				}
+				res, err := i.msearch(maxConcurrentSearches, maxConcurrentShardRequests)
+				if err == nil {
+					fmt.Fprintln(out, res)
+				}
+				return err
+			},
+		}
+	)
+	f := command.Flags()
+	f.IntVar(&maxConcurrentSearches, "max_concurrent_searches", 0, "ID of the pipeline to use to preprocess incoming documents.")
+	f.IntVar(&maxConcurrentShardRequests, "max_concurrent_shard_requests", 0, "if true, the request’s actions must target an index alias.")
+	f.StringVar(&rawFile, "raw_file", es.EmptyFile, "the path to raw file with request body")
+	f.StringVarP(&data, "data", "d", es.EmptyData, "the path to raw file with request body")
+	return command
+}
+
 type Indices struct {
-	client *elasticsearch.Client
+	client  *elasticsearch.Client
+	index   string
+	rawFile string
+	data    string
 }
 
 func (i *Indices) getAllIndices() []string {
@@ -214,7 +337,73 @@ func (i *Indices) reIndex(source, dest string, req *es.RequestBody) (res *esapi.
 	return i.doReindex(bytes.NewReader(body))
 }
 
+func (i *Indices) writeIndex(index string, req *es.RequestBody) (res *esapi.Response, err error) {
+	body, err := es.GetRawRequestBody(req)
+	if err != nil {
+		log.Println("failed to get raw request body")
+		return nil, err
+	}
+	return i.client.Index(index, bytes.NewReader(body), i.client.Index.WithPretty())
+}
+
+func (i *Indices) bulk(requireAlias bool, pipeline string) (res *esapi.Response, err error) {
+	var bulkRequest []func(*esapi.BulkRequest)
+	if i.index != "" {
+		bulkRequest = append(bulkRequest, i.client.Bulk.WithIndex(i.index))
+	}
+	if pipeline != "" {
+		bulkRequest = append(bulkRequest, i.client.Bulk.WithPipeline(pipeline))
+	}
+	if requireAlias != false {
+		bulkRequest = append(bulkRequest, i.client.Bulk.WithRequireAlias(true))
+	}
+	bulkRequest = append(bulkRequest, i.client.Bulk.WithPretty())
+	if i.rawFile != "" {
+		body, err := i.readFromRawFile()
+		if err != nil {
+			return nil, err
+		}
+		return i.client.Bulk(bytes.NewReader(body),
+			bulkRequest...)
+	}
+	return i.client.Bulk(strings.NewReader(i.data),
+		bulkRequest...)
+}
+
+func (i *Indices) msearch(maxConcurrentSearches, maxConcurrentShardRequests int) (res *esapi.Response, err error) {
+	var mSearchRequest []func(*esapi.MsearchRequest)
+	if i.index != "" {
+		mSearchRequest = append(mSearchRequest, i.client.Msearch.WithIndex(i.index))
+	}
+	if maxConcurrentSearches != 0 {
+		mSearchRequest = append(mSearchRequest, i.client.Msearch.WithMaxConcurrentSearches(maxConcurrentSearches))
+	}
+	if maxConcurrentShardRequests != 0 {
+		mSearchRequest = append(mSearchRequest, i.client.Msearch.WithMaxConcurrentShardRequests(maxConcurrentShardRequests))
+	}
+	mSearchRequest = append(mSearchRequest, i.client.Msearch.WithPretty())
+	if i.rawFile != "" {
+		body, err := i.readFromRawFile()
+		if err != nil {
+			return nil, err
+		}
+		return i.client.Msearch(bytes.NewReader(body),
+			mSearchRequest...)
+	}
+	return i.client.Msearch(strings.NewReader(i.data),
+		mSearchRequest...)
+}
+
 func (i *Indices) doReindex(body io.Reader) (res *esapi.Response, err error) {
 	res, err = i.client.Reindex(body, i.client.Reindex.WithWaitForCompletion(false))
 	return
+}
+
+func (i *Indices) readFromRawFile() ([]byte, error) {
+	fmt.Println(i.rawFile)
+	file, err := ioutil.ReadFile(i.rawFile)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
 }

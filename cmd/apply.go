@@ -57,7 +57,7 @@ func applySettings(cli *elasticsearch.Client, out io.Writer, osArgs []string) *c
 				o := applyObject{Client: cli}
 				res, err := o.putSettings(req)
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -100,7 +100,7 @@ func applyFlushed(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 				o := applyObject{Client: cli}
 				res, err := o.flush()
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},
@@ -121,7 +121,7 @@ func applyClearCache(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 				o := applyObject{Client: cli}
 				res, err := o.clearCache()
 				if err == nil {
-					fmt.Fprintf(out, "%s\n", res)
+					fmt.Fprintln(out, res)
 				}
 				return err
 			},

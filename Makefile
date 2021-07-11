@@ -31,4 +31,4 @@ install: ## build blackbean.
 	@go build -o bin/blackbean
 
 clean: ## Remove test report.
-	rm -f *.out
+	@rm -f *.out

@@ -68,7 +68,7 @@ type total struct {
 }
 
 func (S *Settings) WithAllocationSettings(ClusterConcurrentRebalanced, NodeConcurrentRecoveries, NodeInitialPrimariesRecoveries, Enable string) *Settings {
-	if ClusterConcurrentRebalanced == "" && NodeConcurrentRecoveries == "" && NodeInitialPrimariesRecoveries == "" && Enable == "" {
+	if len(ClusterConcurrentRebalanced) == 0 && len(NodeConcurrentRecoveries) == 0 && len(NodeInitialPrimariesRecoveries) == 0 && len(Enable) == 0 {
 		return S
 	}
 	if S.Persistent.Cluster != nil && S.Persistent.Cluster.Routing != nil {
@@ -101,7 +101,7 @@ func (S *Settings) WithAllocationSettings(ClusterConcurrentRebalanced, NodeConcu
 }
 
 func (S *Settings) WithBreakerFielddata(BreakerFielddata string) *Settings {
-	if BreakerFielddata == "" {
+	if len(BreakerFielddata) == 0 {
 		return S
 	}
 
@@ -123,7 +123,7 @@ func (S *Settings) WithBreakerFielddata(BreakerFielddata string) *Settings {
 }
 
 func (S *Settings) WithBreakerRequest(BreakerRequest string) *Settings {
-	if BreakerRequest == "" {
+	if len(BreakerRequest) == 0 {
 		return S
 	}
 
@@ -145,7 +145,7 @@ func (S *Settings) WithBreakerRequest(BreakerRequest string) *Settings {
 }
 
 func (S *Settings) WithBreakerTotal(BreakerTotal string) *Settings {
-	if BreakerTotal == "" {
+	if len(BreakerTotal) == 0 {
 		return S
 	}
 
@@ -167,7 +167,7 @@ func (S *Settings) WithBreakerTotal(BreakerTotal string) *Settings {
 }
 
 func (S *Settings) WithWatermark(High, Low string) *Settings {
-	if High == "" && Low == "" {
+	if len(High) == 0 && len(Low) == 0 {
 		return S
 	}
 	if S.Persistent.Cluster != nil && S.Persistent.Cluster.Routing != nil {
@@ -195,7 +195,7 @@ func (S *Settings) WithWatermark(High, Low string) *Settings {
 }
 
 func (S *Settings) WithRecovery(MaxBytesPerSec string) *Settings {
-	if MaxBytesPerSec == "" {
+	if len(MaxBytesPerSec) == 0 {
 		return S
 	}
 	if S.Persistent.Indices != nil {
@@ -214,7 +214,7 @@ func (S *Settings) WithRecovery(MaxBytesPerSec string) *Settings {
 }
 
 func (S *Settings) WithMaxShardsPerNode(MaxShardsPerNode string) *Settings {
-	if MaxShardsPerNode == "" {
+	if len(MaxShardsPerNode) == 0 {
 		return S
 	}
 	if S.Persistent.Cluster != nil {
@@ -229,7 +229,7 @@ func (S *Settings) WithMaxShardsPerNode(MaxShardsPerNode string) *Settings {
 }
 
 func (S *Settings) WithMaxCompilationsRate(MaxCompilationsRate string) *Settings {
-	if MaxCompilationsRate == "" {
+	if len(MaxCompilationsRate) == 0 {
 		return S
 	}
 

@@ -274,16 +274,16 @@ func Test_decodeFromFile(t *testing.T) {
 }
 
 func TestAddRequestBodyFlag(t *testing.T) {
-	AddRequestBodyFlag(&cobra.Command{}, new(RequestBody))
+	AddRequestBodyFlag(&cobra.Command{}, &RequestBody{})
 }
 
 func TestGetRawRequestBody(t *testing.T) {
-	req := new(RequestBody)
+	req := &RequestBody{}
 	req.Filename = "../testdata/query.yaml"
 	req.Data = `{"abc":"1"}`
 	body, _ := GetRawRequestBody(req)
 	require.Equal(t, "{\"query\":{\"match\":{\"name\":\"test\"}}}", string(body))
-	req = new(RequestBody)
+	req = &RequestBody{}
 	req.Data = `{"abc":"1"}`
 	body, _ = GetRawRequestBody(req)
 	require.Equal(t, "{\"abc\":\"1\"}", string(body))

@@ -43,7 +43,7 @@ func apply(cli *elasticsearch.Client, out io.Writer, osArgs []string) *cobra.Com
 
 func applySettings(cli *elasticsearch.Client, out io.Writer, osArgs []string) *cobra.Command {
 	var (
-		req     = new(es.RequestBody)
+		req     = &es.RequestBody{}
 		command = &cobra.Command{
 			Use:               "settings --[flag] ",
 			Short:             "apply cluster settings change",

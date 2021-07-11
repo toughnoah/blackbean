@@ -61,7 +61,7 @@ func getTemplate(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 func applyTemplate(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	var (
 		t       = Template{Client: cli}
-		req     = new(es.RequestBody)
+		req     = &es.RequestBody{}
 		command = &cobra.Command{
 			Use:   "apply [template]",
 			Short: "create or update template",

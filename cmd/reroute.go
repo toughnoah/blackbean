@@ -42,7 +42,7 @@ func rerouteMoveIndex(cli *elasticsearch.Client, out io.Writer, osArgs []string)
 		toNode   string
 		r        = rerouteObject{Client: cli}
 		i        = Indices{client: cli}
-		req      = new(es.RequestBody)
+		req      = &es.RequestBody{}
 		command  = &cobra.Command{
 			Use:   "move [index]",
 			Short: "move index",
@@ -99,7 +99,7 @@ func rerouteAllocateReplicas(cli *elasticsearch.Client, out io.Writer, osArgs []
 		node    string
 		r       = rerouteObject{Client: cli}
 		i       = Indices{client: cli}
-		req     = new(es.RequestBody)
+		req     = &es.RequestBody{}
 		command = &cobra.Command{
 			Use:   "allocateReplicas [index]",
 			Short: "allocate replicas index",
@@ -146,7 +146,7 @@ func cancel(cli *elasticsearch.Client, out io.Writer, osArgs []string) *cobra.Co
 		node    string
 		r       = rerouteObject{Client: cli}
 		i       = Indices{client: cli}
-		req     = new(es.RequestBody)
+		req     = &es.RequestBody{}
 		command = &cobra.Command{
 			Use:   "cancel [index]",
 			Short: "cancel allocating index",

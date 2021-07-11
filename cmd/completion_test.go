@@ -266,7 +266,7 @@ func TestCompletion2(t *testing.T) {
 	for _, tc := range testCases {
 		out, err := executeCommand(tc.cmd, tc.mock)
 		require.NoError(t, err)
-		require.Equal(t, strings.Contains(out, tc.checkOut), true)
+		require.NotEqual(t, strings.Index(out, tc.checkOut), -1)
 	}
 }
 

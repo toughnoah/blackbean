@@ -73,7 +73,7 @@ func getRole(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 func createRole(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	var (
 		r   = &Role{Client: cli}
-		req = new(es.RequestBody)
+		req = &es.RequestBody{}
 		i   = Indices{
 			client: cli,
 		}
@@ -84,8 +84,8 @@ func createRole(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 			Args:              cobra.ExactArgs(1),
 			ValidArgsFunction: noCompletions,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if es.GetFlagValue(cmd, "cluster_privilege") == "" &&
-					es.GetFlagValue(cmd, "indices") == "" {
+				if len(es.GetFlagValue(cmd, "cluster_privilege")) == 0 &&
+					len(es.GetFlagValue(cmd, "indices")) == 0 {
 					return errors.New("at least one of flags cluster_privilege and indices should be specified")
 				}
 				r.Role = args[0]
@@ -148,8 +148,8 @@ func updateRole(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 				return r.getAllRoles(), cobra.ShellCompDirectiveNoFileComp
 			},
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if es.GetFlagValue(cmd, "cluster_privilege") == "" &&
-					es.GetFlagValue(cmd, "indices") == "" {
+				if len(es.GetFlagValue(cmd, "cluster_privilege")) == 0 &&
+					len(es.GetFlagValue(cmd, "indices")) == 0 {
 					return errors.New("at least one of flags cluster_privilege, and indices should be specified")
 				}
 				r.Role = args[0]
@@ -347,7 +347,7 @@ func (r *Role) getRole() (map[string]map[string]interface{}, error) {
 	if err = json.NewDecoder(ret.Body).Decode(&resMap); err != nil {
 		return nil, errors.Errorf("Error parsing the response body: %s", err)
 	}
-	if len(resMap) == 0 {
+	if resMap != nil && len(resMap) == 0 {
 		return nil, errors.Errorf("cluster has no such role %s", r.Role)
 	}
 	return resMap, nil

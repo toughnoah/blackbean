@@ -78,7 +78,7 @@ func createUser(cli *elasticsearch.Client, out io.Writer, in io.ReadWriter, fd i
 			In:     in,
 			Fd:     fd,
 		}
-		req     = new(es.RequestBody)
+		req     = &es.RequestBody{}
 		command = &cobra.Command{
 			Use:               "create [user]",
 			Short:             "create specify user",
@@ -111,7 +111,7 @@ func updateUser(cli *elasticsearch.Client, out io.Writer, in io.ReadWriter, fd i
 			In:     in,
 			Fd:     fd,
 		}
-		req     = new(es.RequestBody)
+		req     = &es.RequestBody{}
 		command = &cobra.Command{
 			Use:   "update [user]",
 			Short: "update specify user",

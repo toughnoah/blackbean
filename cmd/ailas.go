@@ -26,7 +26,7 @@ func alias(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 
 func createAlias(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	var (
-		req     = new(es.RequestBody)
+		req     = &es.RequestBody{}
 		i       = Indices{client: cli}
 		a       = Alias{client: cli}
 		command = &cobra.Command{

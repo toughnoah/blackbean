@@ -6,9 +6,12 @@ import (
 )
 
 var (
-	rootHandler    = RootHandler{}
-	clusterHandler = &ClusterHandler{}
-	infoHandle     = &InfoHandler{}
+	rootHandler            = RootHandler{}
+	clusterHandler         = &ClusterHandler{}
+	infoHandle             = &InfoHandler{}
+	_              Handler = &RootHandler{}
+	_              Handler = &ClusterHandler{}
+	_              Handler = &InfoHandler{}
 )
 
 type Handler interface {
@@ -83,12 +86,24 @@ type InfoHandler struct {
 
 func (i *InfoHandler) Handle(profile *Profile) {
 	rawMap, ok := profile.raw.(map[string]interface{})
+	if !ok {
+		profile.handleErr = errors.New("can not get info from 'cluster' map")
+		return
+	}
 	profile.Info = make(map[string]string)
 	profile.Info["url"], ok = rawMap["url"].(string)
+	if !ok {
+		profile.handleErr = errors.New("url must to be string type")
+		return
+	}
 	profile.Info["username"], ok = rawMap["username"].(string)
+	if !ok {
+		profile.handleErr = errors.New("username must to be string type")
+		return
+	}
 	profile.Info["password"], ok = rawMap["password"].(string)
 	if !ok {
-		profile.handleErr = errors.New("can not get info from 'cluster' map, url, username,password must to be string type")
+		profile.handleErr = errors.New("password must to be string type")
 		return
 	}
 	i.next(profile)

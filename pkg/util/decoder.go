@@ -150,7 +150,6 @@ func (d *YAMLDecoder) Close() error {
 	return d.r.Close()
 }
 
-const yamlSeparator = "\n---"
 const separator = "---"
 
 // decoder is a convenience interface for Decode.

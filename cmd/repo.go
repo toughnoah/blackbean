@@ -143,7 +143,7 @@ func (S *Snapshot) getAllRepos() []string {
 		log.Printf("error parsing the response body: %s", err)
 		return nil
 	}
-	for rep, _ := range reposMap {
+	for rep := range reposMap {
 		repoSlice = append(repoSlice, rep)
 	}
 	return repoSlice

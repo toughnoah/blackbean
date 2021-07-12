@@ -193,9 +193,8 @@ func (u *User) getAllUser() []string {
 	)
 	ret, _ := u.Client.Security.GetUser()
 
-	json.NewDecoder(ret.Body).Decode(&resMap)
-
-	for i, _ := range resMap {
+	_ = json.NewDecoder(ret.Body).Decode(&resMap)
+	for i := range resMap {
 		resSlice = append(resSlice, i)
 	}
 	return resSlice

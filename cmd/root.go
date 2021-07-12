@@ -34,7 +34,7 @@ Besides, blackbean is the name of my favorite french bulldog.`,
 	// This call is required to gather configuration information prior to
 	// execution.
 	flags.ParseErrorsWhitelist.UnknownFlags = true
-	flags.Parse(args)
+	_ = flags.Parse(args)
 	InitConfig()
 	profile, err := es.GetProfile()
 	if err != nil {

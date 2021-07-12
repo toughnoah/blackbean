@@ -145,7 +145,7 @@ func (a *Alias) getAllAlias() []string {
 		return nil
 	}
 	for _, aliasMap := range resMap {
-		for aliasName, _ := range aliasMap["aliases"].(map[string]interface{}) {
+		for aliasName := range aliasMap["aliases"].(map[string]interface{}) {
 			resSlice = append(resSlice, aliasName)
 		}
 	}

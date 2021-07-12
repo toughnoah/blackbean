@@ -28,8 +28,11 @@ func TestUse(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, out, "change to cluster: backup\n\n")
 	readFile, err := ioutil.ReadFile(file)
+	require.NoError(t, err)
 	require.Equal(t, true, strings.Contains(string(readFile), "current: backup"))
-	defer fs.Remove(file)
+	defer func(fs afero.Fs, name string) {
+		_ = fs.Remove(name)
+	}(fs, file)
 }
 
 func TestModify_CheckClusterConfigExists(t *testing.T) {

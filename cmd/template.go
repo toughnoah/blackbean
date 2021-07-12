@@ -147,8 +147,8 @@ func (t *Template) getAllTemplateName() []string {
 	if err != nil {
 		return nil
 	}
-	json.NewDecoder(res.Body).Decode(&resMap)
-	for k, _ := range resMap {
+	_ = json.NewDecoder(res.Body).Decode(&resMap)
+	for k := range resMap {
 		resSlice = append(resSlice, k)
 	}
 	return resSlice

@@ -11,7 +11,6 @@ type MockTerminal struct {
 	toSend       []byte
 	bytesPerRead int
 	received     []byte
-	fd           int
 }
 
 func (c *MockTerminal) Read(data []byte) (n int, err error) {

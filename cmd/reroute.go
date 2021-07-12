@@ -84,7 +84,7 @@ func rerouteMoveIndex(cli *elasticsearch.Client, out io.Writer, osArgs []string)
 		log.Fatal(err)
 	}
 	f = es.AddRequestBodyFlag(command, req)
-	f.Parse(osArgs)
+	_ = f.Parse(osArgs)
 	if es.NoRawRequestBodySet(command) {
 		_ = command.MarkFlagRequired("shard")
 		_ = command.MarkFlagRequired("from_node")
@@ -132,7 +132,7 @@ func rerouteAllocateReplicas(cli *elasticsearch.Client, out io.Writer, osArgs []
 		log.Fatal(err)
 	}
 	f = es.AddRequestBodyFlag(command, req)
-	f.Parse(osArgs)
+	_ = f.Parse(osArgs)
 	if es.NoRawRequestBodySet(command) {
 		_ = command.MarkFlagRequired("shard")
 		_ = command.MarkFlagRequired("node")
@@ -179,7 +179,7 @@ func cancel(cli *elasticsearch.Client, out io.Writer, osArgs []string) *cobra.Co
 		log.Fatal(err)
 	}
 	f = es.AddRequestBodyFlag(command, req)
-	f.Parse(osArgs)
+	_ = f.Parse(osArgs)
 	if es.NoRawRequestBodySet(command) {
 		_ = command.MarkFlagRequired("shard")
 		_ = command.MarkFlagRequired("node")
@@ -251,7 +251,7 @@ func (o *rerouteObject) getAllNodes() []string {
 	if err != nil {
 		return nil
 	}
-	json.NewDecoder(ret.Body).Decode(&resMap)
+	_ = json.NewDecoder(ret.Body).Decode(&resMap)
 	for _, v := range resMap["nodes"] {
 		resSlice = append(resSlice, v["name"].(string))
 	}

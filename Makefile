@@ -8,7 +8,8 @@ touch ${HOME}/.blackbean.yaml; \
 else \
 echo "go init"; \
 fi
-go mod tidy
+@export GOPROXY=https://goproxy.io
+@go mod tidy
 endef
 
 .PHONY: init

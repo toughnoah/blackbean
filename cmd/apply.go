@@ -11,7 +11,6 @@ import (
 	"github.com/toughnoah/blackbean/pkg/es"
 	"io"
 	"log"
-	"os"
 )
 
 var (
@@ -176,5 +175,5 @@ func (o *applyObject) clearCache() (*esapi.Response, error) {
 }
 
 func AllFlagNotSet(args []string) bool {
-	return len(args) == 4 && args[len(os.Args)-1] == "settings"
+	return len(args) == 4 && args[len(args)-1] == "settings"
 }

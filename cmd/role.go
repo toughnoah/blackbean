@@ -245,10 +245,8 @@ func (r *Role) getAllRoles() []string {
 	if err != nil {
 		return nil
 	}
-	if err = json.NewDecoder(ret.Body).Decode(&resMap); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
-	}
-	for i, _ := range resMap {
+	_ = json.NewDecoder(ret.Body).Decode(&resMap)
+	for i := range resMap {
 		resSlice = append(resSlice, i)
 	}
 	return resSlice

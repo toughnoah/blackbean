@@ -65,6 +65,10 @@ func (m *Modify) ModifyConfigFile(cluster, path string, config map[string]interf
 	}
 	config[es.CurrentSpec] = cluster
 	bytesFile, err := yaml.Marshal(config)
+	if err != nil {
+		m.err = err
+		return
+	}
 	if err = ioutil.WriteFile(path, bytesFile, 0755); err != nil {
 		m.err = err
 	}
@@ -95,7 +99,7 @@ func (m *Modify) CheckClusterConfigExists(cluster string) (checked bool) {
 		m.err = errors.New("wrong 'cluster' type, want map")
 		return
 	}
-	for k, _ := range clusterMap {
+	for k := range clusterMap {
 		if k == cluster {
 			checked = true
 		}

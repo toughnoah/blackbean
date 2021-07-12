@@ -54,9 +54,7 @@ func executeCommand(cmdToExecute string, MockTransport http.RoundTripper) (strin
 		p.Info["password"] = TestPassword
 		return p, nil
 	})
-	monkey.Patch(InitConfig, func() {
-		return
-	})
+	monkey.Patch(InitConfig, func() {})
 	file, _ := os.OpenFile("/dev/ptmx", os.O_RDWR, 0)
 	fd := int(file.Fd())
 	fakeTerminal := &MockTerminal{

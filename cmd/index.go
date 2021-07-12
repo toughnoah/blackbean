@@ -284,7 +284,7 @@ func (i *Indices) getAllIndices() []string {
 		log.Printf("error parsing the response body: %s", err)
 		return nil
 	}
-	for index, _ := range indicesMap {
+	for index := range indicesMap {
 		indicesSlice = append(indicesSlice, index)
 	}
 	return indicesSlice
@@ -354,7 +354,7 @@ func (i *Indices) bulk(requireAlias bool, pipeline string) (res *esapi.Response,
 	if pipeline != "" {
 		bulkRequest = append(bulkRequest, i.client.Bulk.WithPipeline(pipeline))
 	}
-	if requireAlias != false {
+	if requireAlias {
 		bulkRequest = append(bulkRequest, i.client.Bulk.WithRequireAlias(true))
 	}
 	bulkRequest = append(bulkRequest, i.client.Bulk.WithPretty())
@@ -400,7 +400,6 @@ func (i *Indices) doReindex(body io.Reader) (res *esapi.Response, err error) {
 }
 
 func (i *Indices) readFromRawFile() ([]byte, error) {
-	fmt.Println(i.rawFile)
 	file, err := ioutil.ReadFile(i.rawFile)
 	if err != nil {
 		return nil, err

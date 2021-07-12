@@ -28,7 +28,7 @@ test: ## Run go test against code.
 	@mv ${HOME}/blackbean.yaml ${HOME}/.blackbean.yaml
 
 install: ## build blackbean.
-	@go build -o bin/blackbean
+	@go build -o ${HOME}/bin/blackbean
 
 clean: ## Remove test report.
 	@rm -f *.out

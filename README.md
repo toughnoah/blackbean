@@ -40,6 +40,11 @@ curl -LO https://github.com/toughnoah/blackbean/releases/download/v1.0.2/blackbe
 chmod +x ./blackbean
 mv ./blackbean /usr/local/bin
 ```
+```console
+git clone -b master git@github.com:toughnoah/blackbean.git
+cd blackbean
+make
+```
 
 ##  2. <a name='Configuration'></a>Configuration
 Define your config `.blackbean.yaml` file firstly and put it into your home directory, do not forget specify `current` as one of your cluster.

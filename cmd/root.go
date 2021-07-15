@@ -41,7 +41,7 @@ Besides, blackbean is the name of my favorite french bulldog.`,
 		log.Fatalf("Get Profile error %v", err)
 	}
 
-	cli, err := es.NewEsClient(profile.Info[es.ConfigUrl], profile.Info[es.ConfigUsername], profile.Info[es.ConfigPassword], transport)
+	cli, err := es.NewEsClient(profile.ClusterInfo.Url, profile.ClusterInfo.Username, profile.ClusterInfo.Password, transport)
 	if err != nil {
 		log.Fatalf("New client error %v", err)
 	}

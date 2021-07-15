@@ -91,7 +91,7 @@ func (m *Modify) CheckClusterConfigExists(cluster string) (checked bool) {
 		return
 	}
 	if viper.Get(es.ConfigSpec) == nil {
-		m.err = errors.New("can not read 'cluster' from config")
+		m.err = errors.New("can not read 'cluster' from .blackbean")
 		return
 	}
 	clusterMap, ok := viper.Get(es.ConfigSpec).(map[string]interface{})

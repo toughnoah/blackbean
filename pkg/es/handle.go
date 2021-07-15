@@ -3,6 +3,7 @@ package es
 import (
 	"errors"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -20,10 +21,16 @@ type Handler interface {
 }
 
 type Profile struct {
-	Info      map[string]string
-	env       string
-	raw       interface{}
-	handleErr error
+	ClusterInfo *clusterInfo
+	env         string
+	raw         interface{}
+	handleErr   error
+}
+
+type clusterInfo struct {
+	Url      string `yaml:"url"`
+	Password string `yaml:"password"`
+	Username string `yaml:"username"`
 }
 
 type ClusterHandler struct {
@@ -36,26 +43,19 @@ type RootHandler struct {
 
 func (r *RootHandler) Handle(profile *Profile) {
 	var ok bool
-	if viper.Get(CurrentSpec) == nil {
-		profile.handleErr = errors.New("can not read 'current' from config")
+	if viper.Get(CurrentSpec) == nil || viper.Get(ConfigSpec) == nil {
+		profile.handleErr = errors.New("can not read 'current/cluster' spec from .blackbean")
 		return
 	}
 	profile.env, ok = viper.Get(CurrentSpec).(string)
 	if !ok {
-		profile.handleErr = errors.New("can not read 'env' from config")
-		return
-	}
-	if viper.Get(ConfigSpec) == nil {
-		profile.handleErr = errors.New("can not read 'cluster' from config")
+		profile.handleErr = errors.New("bad 'current' type from .blackbean, want string")
 		return
 	}
 	r.next(profile)
 }
 
 func (r *RootHandler) next(profile *Profile) {
-	if profile.handleErr != nil {
-		return
-	}
 	if r.handler != nil {
 		r.handler.Handle(profile)
 	}
@@ -64,17 +64,14 @@ func (r *RootHandler) next(profile *Profile) {
 func (c *ClusterHandler) Handle(profile *Profile) {
 	cluster, ok := viper.Get(ConfigSpec).(map[string]interface{})
 	if !ok {
-		profile.handleErr = errors.New("can not read 'cluster' from config")
+		profile.handleErr = errors.New("can not read 'cluster' from .blackbean")
 		return
 	}
-	profile.raw = cluster[profile.env].(map[string]interface{})
+	profile.raw = cluster[profile.env]
 	c.next(profile)
 }
 
 func (c *ClusterHandler) next(profile *Profile) {
-	if profile.handleErr != nil {
-		return
-	}
 	if c.handler != nil {
 		c.handler.Handle(profile)
 	}
@@ -85,34 +82,22 @@ type InfoHandler struct {
 }
 
 func (i *InfoHandler) Handle(profile *Profile) {
-	rawMap, ok := profile.raw.(map[string]interface{})
-	if !ok {
-		profile.handleErr = errors.New("can not get info from 'cluster' map")
+	ci := &clusterInfo{}
+	marshal, err := yaml.Marshal(profile.raw)
+	if err != nil {
+		profile.handleErr = err
 		return
 	}
-	profile.Info = make(map[string]string)
-	profile.Info["url"], ok = rawMap["url"].(string)
-	if !ok {
-		profile.handleErr = errors.New("url must to be string type")
+	err = yaml.Unmarshal(marshal, ci)
+	if err != nil {
+		profile.handleErr = err
 		return
 	}
-	profile.Info["username"], ok = rawMap["username"].(string)
-	if !ok {
-		profile.handleErr = errors.New("username must to be string type")
-		return
-	}
-	profile.Info["password"], ok = rawMap["password"].(string)
-	if !ok {
-		profile.handleErr = errors.New("password must to be string type")
-		return
-	}
+	profile.ClusterInfo = ci
 	i.next(profile)
 }
 
 func (i *InfoHandler) next(profile *Profile) {
-	if profile.handleErr != nil {
-		return
-	}
 	if i.handler != nil {
 		i.handler.Handle(profile)
 	}

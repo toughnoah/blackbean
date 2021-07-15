@@ -41,5 +41,5 @@ func TestModify_CheckClusterConfigExists(t *testing.T) {
 	_ = viper.ReadConfig(bytes.NewReader([]byte("")))
 	checked := m.CheckClusterConfigExists("a")
 	require.Equal(t, false, checked)
-	require.Equal(t, errors.New("can not read 'cluster' from config").Error(), m.err.Error())
+	require.Equal(t, errors.New("can not read 'cluster' from .blackbean").Error(), m.err.Error())
 }

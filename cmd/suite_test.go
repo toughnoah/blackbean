@@ -45,13 +45,15 @@ func executeCommand(cmdToExecute string, MockTransport http.RoundTripper) (strin
 		return "", err
 	}
 	buf := new(bytes.Buffer)
+	ci := &es.ClusterInfo{
+		Username: TestUsername,
+		Password: TestPassword,
+		Url:      TestUrl,
+	}
 	monkey.Patch(es.GetProfile, func() (profile *es.Profile, err error) {
 		p := &es.Profile{
-			Info: make(map[string]string),
+			ClusterInfo: ci,
 		}
-		p.Info["url"] = TestUrl
-		p.Info["username"] = TestUsername
-		p.Info["password"] = TestPassword
 		return p, nil
 	})
 	monkey.Patch(InitConfig, func() {})

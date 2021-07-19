@@ -21,13 +21,13 @@ type Handler interface {
 }
 
 type Profile struct {
-	ClusterInfo *clusterInfo
+	ClusterInfo *ClusterInfo
 	env         string
 	raw         interface{}
 	handleErr   error
 }
 
-type clusterInfo struct {
+type ClusterInfo struct {
 	Url      string `yaml:"url"`
 	Password string `yaml:"password"`
 	Username string `yaml:"username"`
@@ -82,7 +82,7 @@ type InfoHandler struct {
 }
 
 func (i *InfoHandler) Handle(profile *Profile) {
-	ci := &clusterInfo{}
+	ci := &ClusterInfo{}
 	marshal, err := yaml.Marshal(profile.raw)
 	if err != nil {
 		profile.handleErr = err

@@ -72,9 +72,9 @@ var _ = Describe("put settings test", func() {
 				fmt.Println(string(tc.yamlExample))
 				profile, err := GetProfile()
 				Expect(err).To(tc.err)
-				Expect(profile.Info[ConfigUrl]).To(Equal(tc.url))
-				Expect(profile.Info[ConfigUsername]).To(Equal(tc.user))
-				Expect(profile.Info[ConfigPassword]).To(Equal(tc.pwd))
+				Expect(profile.ClusterInfo.Url).To(Equal(tc.url))
+				Expect(profile.ClusterInfo.Username).To(Equal(tc.user))
+				Expect(profile.ClusterInfo.Password).To(Equal(tc.pwd))
 			}
 		})
 	})

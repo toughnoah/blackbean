@@ -32,3 +32,4 @@ install: ## build blackbean.
 
 clean: ## Remove test report.
 	@rm -f *.out
+

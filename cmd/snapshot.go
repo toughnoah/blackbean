@@ -171,6 +171,7 @@ func restoreSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	_ = command.MarkFlagRequired("index")
 	_ = command.MarkFlagRequired("rename_pattern")
 	_ = command.MarkFlagRequired("rename_replacement")
+	_ = command.MarkFlagRequired("snapshot")
 	return command
 }
 

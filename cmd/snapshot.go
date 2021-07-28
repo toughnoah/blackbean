@@ -155,7 +155,7 @@ func restoreSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 		}
 	)
 	f := command.Flags()
-	f.StringVar(&snapshots, "snapshot", "_all", "to get specific snapshot")
+	f.StringVar(&snapshots, "snapshot", "", "to get specific snapshot")
 	err := command.RegisterFlagCompletionFunc("snapshot", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		if len(args) == 1 {
 			return so.getRepoAllSnapshotsForFlag(args[0]), cobra.ShellCompDirectiveNoFileComp
@@ -171,6 +171,7 @@ func restoreSnapshot(cli *elasticsearch.Client, out io.Writer) *cobra.Command {
 	_ = command.MarkFlagRequired("index")
 	_ = command.MarkFlagRequired("rename_pattern")
 	_ = command.MarkFlagRequired("rename_replacement")
+	_ = command.MarkFlagRequired("snapshot")
 	return command
 }
 

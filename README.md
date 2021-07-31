@@ -40,7 +40,7 @@ curl -LO https://github.com/toughnoah/blackbean/releases/download/v1.0.2/blackbe
 chmod +x ./blackbean
 mv ./blackbean /usr/local/bin
 ```
-```console
+```
 git clone -b master git@github.com:toughnoah/blackbean.git
 cd blackbean
 make
